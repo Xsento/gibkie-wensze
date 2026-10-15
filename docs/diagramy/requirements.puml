@@ -1,0 +1,76 @@
+@startuml
+title TripForge - wymagania SysML (ISO/IEC 25002/25010)
+left to right direction
+hide circle
+hide empty methods
+scale 0.7
+
+class REQ0 <<requirement>> {
+  text = "Grupowe planowanie wyjazdu"
+}
+
+package "Funkcjonalne" {
+  class FR1 <<functionalRequirement>> {
+    text = "Zaznaczanie dostepnosci (US-1)"
+  }
+  class FR2 <<functionalRequirement>> {
+    text = "Glosowanie na propozycje (US-2)"
+  }
+  class FR3 <<functionalRequirement>> {
+    text = "Wydarzenia w harmonogramie (US-3)"
+  }
+  class FR4 <<functionalRequirement>> {
+    text = "Szacunkowy koszt (US-4)"
+  }
+  class FR5 <<functionalRequirement>> {
+    text = "Logowanie (US-5)"
+  }
+}
+
+package "Niefunkcjonalne (SQuaRE)" {
+  class NFR1 <<FunctionalSuitability>> {
+    text = "Poprawne obliczenia kosztow"
+    RoundingError = 0 gr
+  }
+  class NFR2 <<PerformanceEfficiency>> {
+    text = "Szybkie odpowiedzi"
+    ResponseTime_p95 = < 500 ms
+  }
+  class NFR3 <<Security>> {
+    text = "Hasla jako hash"
+    PlainTextPasswords = 0
+  }
+  class NFR4 <<Usability>> {
+    text = "Prosta obsluga"
+    TimeToFirstVote = < 60 s
+  }
+  class NFR5 <<Maintainability>> {
+    text = "Kod testowalny"
+    TestCoverage = >= 70 %
+  }
+}
+
+class Prototyp_Flask <<block>>
+
+REQ0 +-- FR1
+REQ0 +-- FR2
+REQ0 +-- FR3
+REQ0 +-- FR4
+REQ0 +-- FR5
+REQ0 +-- NFR1
+REQ0 +-- NFR2
+REQ0 +-- NFR3
+REQ0 +-- NFR4
+REQ0 +-- NFR5
+
+NFR1 ..> FR4 : <<deriveReqt>>
+NFR4 ..> FR5 : <<deriveReqt>>
+NFR5 ..> FR2 : <<deriveReqt>>
+NFR2 ..> FR1 : <<deriveReqt>>
+
+Prototyp_Flask ..> FR1 : <<satisfy>>
+Prototyp_Flask ..> FR2 : <<satisfy>>
+Prototyp_Flask ..> FR3 : <<satisfy>>
+Prototyp_Flask ..> FR4 : <<satisfy>>
+Prototyp_Flask ..> FR5 : <<satisfy>>
+@enduml
