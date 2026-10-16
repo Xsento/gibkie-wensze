@@ -1,6 +1,4 @@
-```
-1.
-```
+# `1.`
 
 ```
 Jako uczestnik wyjazdu grupowego chcę zaznaczać dni, w których jestem dostępny,
@@ -15,7 +13,7 @@ T: System zapisuje jego dostępność i aktualizuje widok kalendarza, uwzględni
 przy tym dostępność pozostałych użytkowników
 ```
 
-# `2.` 
+# `2.`
 
 ```
 Jako uczestnik wyjazdu grupowego chcę głosować na propozycje noclegów i
@@ -30,7 +28,7 @@ T: System zapisuje głos i aktualizuje liczbę głosów oddanych na wybraną
 propozycję.
 ```
 
-# `3.` 
+# `3.`
 
 ```
 Jako organizator wyjazdu grupowego chcę dodawać wydarzenia do harmonogramu, aby
@@ -48,7 +46,7 @@ T: System zapisuje wydarzenie i wyświetla je w harmonogramie we wskazanym
 terminie.
 ```
 
-# `4.` 
+# `4.`
 
 ```
 Jako uczestnik wyjazdu grupowego chcę sprawdzić szacunkowy koszt wycieczki na
@@ -74,7 +72,7 @@ T: System wyświetla łączny szacunkowy koszt wyjazdu oraz przewidywany koszt
 przypadający na jednego uczestnika.
 ```
 
-# `5.` 
+# `5.`
 
 ```
 Jako użytkownik aplikacji TripForge chcę zalogować się na swoje konto, aby
@@ -92,4 +90,3 @@ W: Użytkownik wpisuje poprawny adres e-mail i hasło, a następnie wybiera opcj
 T: System weryfikuje dane logowania i przekierowuje użytkownika do jego widoku
 aplikacji.
 ```
-
