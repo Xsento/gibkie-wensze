@@ -58,9 +58,6 @@ kryterium:
 
 ```
 G: Organizator ma dostęp do harmonogramu wyjazdu.
-```
-
-```
 W: Organizator dodaje wydarzenie, podając jego nazwę, datę i godzinę.
 T: System zapisuje wydarzenie i wyświetla je w harmonogramie we wskazanym
 terminie.
@@ -82,22 +79,13 @@ T: Testowalna – sprawdzamy, czy dodane wydarzenie pojawia się we wskazanym te
 Jako uczestnik wyjazdu grupowego chcę sprawdzić szacunkowy koszt wycieczki na
 podstawie planowanych wydatków, aby ocenić, czy wyjazd mieści się w moich
 możliwościach finansowych.
-```
-
-```
 kryterium:
 ```
 
 ```
 G: W systemie zapisano przewidywane koszty noclegu, transportu, wyżywienia i
 atrakcji.
-```
-
-```
 W: Użytkownik otwiera sekcję szacunkowych kosztów wycieczki.
-```
-
-```
 T: System wyświetla łączny szacunkowy koszt wyjazdu oraz przewidywany koszt
 przypadający na jednego uczestnika.
 ```
@@ -124,9 +112,6 @@ kryterium:
 G: Użytkownik posiada konto w aplikacji i zna prawidłowe dane logowania.
 W: Użytkownik wpisuje poprawny adres e-mail i hasło, a następnie wybiera opcję
 „Zaloguj się”.
-```
-
-```
 T: System weryfikuje dane logowania i przekierowuje użytkownika do jego widoku
 aplikacji.
 ```
