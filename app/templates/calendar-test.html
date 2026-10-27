@@ -1,0 +1,44 @@
+{# TYMCZASOWY szablon do sprawdzenia backendu, do podmiany na prawdziwy frontend #}
+<p>Wyjazd #{{ view.trip_id }} · {{ view.members_count }} osób</p>
+<h1>{{ view.trip_title }}</h1>
+{% if view.approved_label %}<p><b>Zatwierdzono {{ view.approved_label }}</b></p>{% endif %}
+{% for m in get_flashed_messages() %}<p style="color:red">{{ m }}</p>{% endfor %}
+
+<h2>
+  <a href="{{ url_for('calendar.show', rok=view.prev_month[0], miesiac=view.prev_month[1]) }}">&lt;</a>
+  {{ view.month_label }}
+  <a href="{{ url_for('calendar.show', rok=view.next_month[0], miesiac=view.next_month[1]) }}">&gt;</a>
+</h2>
+
+<table>
+  <tr><th>Pn</th><th>Wt</th><th>Śr</th><th>Cz</th><th>Pt</th><th>So</th><th>Nd</th></tr>
+  {% for week in view.weeks %}
+  <tr>
+    {% for d in week %}
+    <td style="{% if d.approved %}outline:2px solid black;{% endif %}
+               background:{{ {'all': '#e0531f', 'most': '#f4a582', 'few': '#fde0d0'}.get(d.level, 'white') }}">
+      {% if not d.in_month %}
+        <span style="color:#bbb">{{ d.day.day }}</span>
+      {% elif view.is_organizer or not d.in_window %}
+        {{ d.day.day }}
+      {% else %}
+        <form method="post" action="{{ url_for('calendar.toggle') }}">
+          {{ form.csrf_token }}
+          <input type="hidden" name="day" value="{{ d.day.isoformat() }}">
+          <button>{{ d.day.day }}{% if d.mine %} ✓{% endif %}</button>
+        </form>
+      {% endif %}
+    </td>
+    {% endfor %}
+  </tr>
+  {% endfor %}
+</table>
+
+{% if view.is_organizer %}
+<h2>Zatwierdź termin</h2>
+<form method="post" action="{{ url_for('calendar.approve') }}">
+  {{ range_form.csrf_token }}
+  {{ range_form.start_date() }} – {{ range_form.end_date() }}
+  <button>Zatwierdź</button>
+</form>
+{% endif %}

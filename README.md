@@ -47,3 +47,5 @@ Pliki `.puml` renderuje się w VS Code rozszerzeniem **PlantUML** (Alt+D). W ust
 | _Tomasz Wiczyński_  |
 | _Arkadiusz Woźniak_ |
 | _Paweł Wołkowicz_   |
+
+![alt text](image.png)
