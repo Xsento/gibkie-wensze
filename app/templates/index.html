@@ -3,6 +3,7 @@
 {% block title %}Przegląd — TripForge{% endblock %}
 
 {% block content %}
+{% if view %}
 
 <section class="tf-trip-heading mb-4">
     <div>
@@ -21,11 +22,11 @@
 
                     <h2>
                         <span class="tf-month-change">
-                            <a href="{{ url_for('calendar.show', rok=view.prev_month[0], miesiac=view.prev_month[1]) }}">&lt;</a>
+                            <a href="{{ url_for('main.index', rok=view.prev_month[0], miesiac=view.prev_month[1]) }}">&lt;</a>
                         </span>
                         {{ view.month_label }}
                         <span class="tf-month-change">
-                            <a href="{{ url_for('calendar.show', rok=view.next_month[0], miesiac=view.next_month[1]) }}">&gt;</a>
+                            <a href="{{ url_for('main.index', rok=view.next_month[0], miesiac=view.next_month[1]) }}">&gt;</a>
                         </span>
                     </h2>
 
@@ -51,13 +52,16 @@
                             <div class="tf-calendar-day
                                 {% if not d.in_month %}is-outside
                                 {% elif d.level == 'all' %}is-all
-                                {% elif d.level in ['most', 'few'] %}is-partial
+                                {% elif d.level == 'most' %}is-partial is-most
+                                {% elif d.level %}is-partial
                                 {% endif %}
-                                {% if d.approved %}is-approved{% endif %}">
+                                {% if d.approved %}is-approved{% endif %}"
+                                 style="--share: {{ d.share }}"
+                                 title="{{ d.available_count }} z {{ view.members_count }} osób">
 
                                 {% if not d.in_month %}
                                     <span class="day-number">{{ d.day.day }}</span>
-                                {% elif view.is_organizer or not d.in_window %}
+                                {% elif not d.in_window %}
                                     <span class="day-number">{{ d.day.day }}</span>
                                 {% else %}
                                     <form method="post"
@@ -93,5 +97,8 @@
         </section>
     </div>
 </div>
+{% else %}
+<p>Wybierz uczestnika: <a href="/jako/1">/jako/1</a>, <a href="/jako/2">/jako/2</a>, <a href="/jako/3">/jako/3</a> (tymczasowo, do czasu logowania).</p>
+{% endif %}
 
 {% endblock %}

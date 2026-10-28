@@ -32,11 +32,8 @@ def available_days_of_member(member_id):
     return {a.day for a in rows}
 
 
-def count_members(trip_id, organizers=True):
-    query = TripMember.query.filter_by(trip_id=trip_id)
-    if not organizers:
-        query = query.filter_by(is_organizer=False)
-    return query.count()
+def count_members(trip_id):
+    return TripMember.query.filter_by(trip_id=trip_id).count()
 
 
 def add_trip(title, start_date, end_date, organizer_name, member_names):

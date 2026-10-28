@@ -24,6 +24,7 @@ class CalendarDay:
     in_window: bool
     available_count: int
     level: str
+    share: float          # jaka część grupy wybrała ten dzień: 0.0 (nikt) … 1.0 (wszyscy)
     mine: bool
     approved: bool
 
@@ -33,7 +34,6 @@ class CalendarView:
     trip_id: int
     trip_title: str
     members_count: int
-    participants_count: int
     is_organizer: bool
     year: int
     month: int
@@ -63,7 +63,7 @@ def get_calendar(member_id, year=None, month=None):
 
     counts = repo.count_available_by_day(trip.id)
     mine = repo.available_days_of_member(member.id)
-    participants = repo.count_members(trip.id, organizers=False)
+    members = repo.count_members(trip.id)
 
     weeks = []
     for week in calendar.Calendar(firstweekday=0).monthdatescalendar(year, month):
@@ -73,7 +73,8 @@ def get_calendar(member_id, year=None, month=None):
                 in_month=d.month == month,
                 in_window=trip.start_date <= d <= trip.end_date,
                 available_count=counts.get(d, 0),
-                level=_level(counts.get(d, 0), participants),
+                level=_level(counts.get(d, 0), members),
+                share=round(counts.get(d, 0) / members, 2) if members else 0.0,
                 mine=d in mine,
                 approved=bool(trip.approved_start) and trip.approved_start <= d <= trip.approved_end,
             )
@@ -83,8 +84,7 @@ def get_calendar(member_id, year=None, month=None):
     return CalendarView(
         trip_id=trip.id,
         trip_title=trip.title,
-        members_count=repo.count_members(trip.id),
-        participants_count=participants,
+        members_count=members,
         is_organizer=member.is_organizer,
         year=year,
         month=month,
@@ -98,8 +98,6 @@ def get_calendar(member_id, year=None, month=None):
 
 def toggle_day(member_id, day):
     member = _get_member(member_id)
-    if member.is_organizer:
-        raise CalendarError("Organizator nie zaznacza dostępności, tylko zatwierdza termin.")
     _check_in_window(member.trip, day, day)
 
     availability = repo.get_availability(member.id, day)
@@ -121,12 +119,12 @@ def approve_range(member_id, start, end):
     repo.save(trip)
 
 
-def _level(count, participants):
-    if count == 0 or participants == 0:
+def _level(count, members):
+    if count == 0 or members == 0:
         return ""
-    if count >= participants:
+    if count >= members:
         return "all"
-    if count * 2 > participants:
+    if count * 2 > members:
         return "most"
     return "few"
 

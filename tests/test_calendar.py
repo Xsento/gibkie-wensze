@@ -50,24 +50,28 @@ def test_default_month_and_navigation(app):
 
 def test_toggle_and_levels(app):
     # kryterium akceptacji US-1: po wybraniu dnia rośnie licznik dostępnych osób
+    # 4 osoby razem z organizatorem: 1–2 = niewielu, 3 = większość, 4 = wszyscy
     d = date(2026, 9, 18)
     with app.app_context():
         calendar_service.toggle_day(TOMASZ, d)
-        assert day_of(calendar_service.get_calendar(TOMASZ, 2026, 9), d).level == "few"
         calendar_service.toggle_day(PAWEL, d)
-        assert day_of(calendar_service.get_calendar(TOMASZ, 2026, 9), d).level == "most"
+        assert day_of(calendar_service.get_calendar(TOMASZ, 2026, 9), d).level == "few"
         calendar_service.toggle_day(OLA, d)
+        assert day_of(calendar_service.get_calendar(TOMASZ, 2026, 9), d).level == "most"
+        calendar_service.toggle_day(ORGANIZATOR, d)
         view = calendar_service.get_calendar(TOMASZ, 2026, 9)
-        assert day_of(view, d).available_count == 3 and day_of(view, d).level == "all"
-        assert day_of(view, d).mine and view.participants_count == 3 and view.members_count == 4
+        assert day_of(view, d).available_count == 4 and day_of(view, d).level == "all"
+        assert day_of(view, d).share == 1.0 and day_of(view, date(2026, 9, 19)).share == 0.0
+        assert day_of(view, d).mine and view.members_count == 4
         calendar_service.toggle_day(OLA, d)  # odznaczenie
-        assert day_of(calendar_service.get_calendar(TOMASZ, 2026, 9), d).available_count == 2
+        assert day_of(calendar_service.get_calendar(TOMASZ, 2026, 9), d).available_count == 3
+        assert day_of(calendar_service.get_calendar(TOMASZ, 2026, 9), d).share == 0.75
 
 
-def test_organizer_approves_but_does_not_mark(app):
+def test_organizer_marks_and_approves(app):
     with app.app_context():
-        with pytest.raises(CalendarError):
-            calendar_service.toggle_day(ORGANIZATOR, date(2026, 9, 18))
+        calendar_service.toggle_day(ORGANIZATOR, date(2026, 9, 18))
+        assert day_of(calendar_service.get_calendar(ORGANIZATOR, 2026, 9), date(2026, 9, 18)).mine
         with pytest.raises(CalendarError):
             calendar_service.approve_range(TOMASZ, date(2026, 9, 18), date(2026, 9, 21))
         calendar_service.approve_range(ORGANIZATOR, date(2026, 9, 18), date(2026, 9, 21))
@@ -108,18 +112,23 @@ def test_errors(app):
 
 def test_routes(app):
     client = app.test_client()
-    assert client.get("/kalendarz/").status_code == 302  # nie wybrano uczestnika
-    client.get("/kalendarz/jako/2")
-    assert client.get("/kalendarz/?rok=2026&miesiac=10").status_code == 200
-    r = client.post("/kalendarz/toggle", data={"day": "2026-10-05"})
-    assert r.headers["Location"].endswith("/kalendarz/?rok=2026&miesiac=10")
+    r = client.get("/")  # nie wybrano uczestnika: strona się wyświetla z komunikatem
+    assert r.status_code == 200 and "Wybierz uczestnika" in r.get_data(as_text=True)
+    client.get("/jako/2")
+    page = client.get("/?rok=2026&miesiac=10").get_data(as_text=True)
+    assert "Październik 2026" in page
+    r = client.post("/toggle", data={"day": "2026-10-05"})
+    assert r.headers["Location"].endswith("/?rok=2026&miesiac=10")
     with app.app_context():
         assert day_of(calendar_service.get_calendar(TOMASZ, 2026, 10), date(2026, 10, 5)).available_count == 1
 
-    client.get("/kalendarz/jako/1")
-    client.post("/kalendarz/zatwierdz", data={"start_date": "2026-10-05", "end_date": "2026-10-08"})
+    client.get("/jako/1")
+    client.post("/toggle", data={"day": "2026-10-05"})  # organizator też zaznacza
+    client.post("/zatwierdz", data={"start_date": "2026-10-05", "end_date": "2026-10-08"})
     with app.app_context():
-        assert calendar_service.get_calendar(TOMASZ).approved_label == "5–8 października"
+        view = calendar_service.get_calendar(TOMASZ)
+        assert view.approved_label == "5–8 października"
+        assert day_of(view, date(2026, 10, 5)).available_count == 2
 
 
 def test_init_db(app):

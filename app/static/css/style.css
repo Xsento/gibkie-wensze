@@ -258,9 +258,19 @@ body.tf-body {
     cursor: pointer;
 }
 
+/* im więcej osób wybrało dzień (--share od 0 do 1), tym mocniejszy pomarańczowy */
 .tf-calendar-day.is-partial {
-    background: #fce7dc;
+    background: color-mix(in srgb, var(--tf-orange) calc(15% + var(--share) * 70%), #fce7dc);
     color: #8b3b1d;
+}
+
+.tf-calendar-day.is-partial .tf-calendar-button {
+    color: inherit;
+}
+
+.tf-calendar-day.is-most,
+.tf-calendar-day.is-all .tf-calendar-button {
+    color: white;
 }
 
 .tf-calendar-day.is-all{

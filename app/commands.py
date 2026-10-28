@@ -14,4 +14,4 @@ def init_db_command():
     db.drop_all()
     db.create_all()
     create_trip("Majówka w Tatrach", date(2026, 10, 1), date(2027, 2, 28), "Tomasz", ["Arkadiusz", "Paweł"])
-    click.echo("Gotowe. Wejdź na /kalendarz/jako/1 (Tomasz, organizator), /jako/2 (Arkadiusz) lub /jako/3 (Paweł).")
+    click.echo("Gotowe. Wejdź na /jako/1 (Tomasz, organizator), /jako/2 (Arkadiusz) lub /jako/3 (Paweł).")

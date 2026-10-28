@@ -1,10 +1,11 @@
-from flask import Blueprint, flash, redirect, render_template, request, session, url_for
+from flask import Blueprint, flash, redirect, session, url_for
 
 from app.forms import DayForm, RangeForm
 from app.services import calendar_service
 from app.services.calendar_service import CalendarError
 
-bp = Blueprint("calendar", __name__, url_prefix="/kalendarz")
+# Akcje kalendarza. Sam kalendarz wyświetla strona główna "/" (routes/main.py).
+bp = Blueprint("calendar", __name__)
 
 
 def flash_errors(form):
@@ -15,20 +16,8 @@ def flash_errors(form):
 
 def back_to(day):
     if day:
-        return redirect(url_for("calendar.show", rok=day.year, miesiac=day.month))
-    return redirect(url_for("calendar.show"))
-
-
-@bp.route("/")
-def show():
-    try:
-        view = calendar_service.get_calendar(session.get("member_id"),
-                                             request.args.get("rok", type=int),
-                                             request.args.get("miesiac", type=int))
-    except CalendarError as e:
-        flash(str(e), "danger")
-        return redirect(url_for("main.index"))
-    return render_template("index.html", view=view, form=DayForm(), range_form=RangeForm())
+        return redirect(url_for("main.index", rok=day.year, miesiac=day.month))
+    return redirect(url_for("main.index"))
 
 
 @bp.route("/toggle", methods=["POST"])
@@ -59,4 +48,4 @@ def approve():
 @bp.route("/jako/<int:member_id>")
 def act_as(member_id):
     session["member_id"] = member_id
-    return redirect(url_for("calendar.show"))
+    return redirect(url_for("main.index"))
