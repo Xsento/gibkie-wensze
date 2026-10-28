@@ -38,7 +38,7 @@
 <h2>Zatwierdź termin</h2>
 <form method="post" action="{{ url_for('calendar.approve') }}">
   {{ range_form.csrf_token }}
-  {{ range_form.start_date() }} – {{ range_form.end_date() }}
+  {{ range_form.start_date() }} – {{ range_form.end_date    () }}
   <button>Zatwierdź</button>
 </form>
 {% endif %}

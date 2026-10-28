@@ -8,6 +8,7 @@
     --tf-muted: #788398;
     --tf-border: #e6eaf0;
     --tf-green: #29964a;
+    --tf-contrast: #0b4bc6;
     --tf-radius: 19px;
 }
 
@@ -225,21 +226,24 @@ body.tf-body {
     cursor: pointer;
 }
 
-.tf-calendar-weekdays,
 .tf-calendar {
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
+    grid-template-rows: repeat(6, minmax(0, 1fr));
     gap: 4px;
 }
 
 .tf-calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 4px;
     margin-bottom: 8px;
     color: var(--tf-muted);
     font-size: 10px;
     text-align: center;
 }
 
-.tf-calendar-day {
+.tf-calendar-day{
     display: grid;
     place-items: center;
     min-width: 0;
@@ -259,7 +263,7 @@ body.tf-body {
     color: #8b3b1d;
 }
 
-.tf-calendar-day.is-selected {
+.tf-calendar-day.is-all{
     background: var(--tf-orange);
     color: white;
     font-weight: 750;
@@ -301,6 +305,7 @@ body.tf-body {
 }
 
 .tf-calendar-approve-form {
+    margin-top: 10px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -326,13 +331,13 @@ body.tf-body {
 }
 
 .tf-calendar-approve-form input:focus {
-    border-color: #0b4bc6;
+    border-color: var(--tf-contrast);
     box-shadow: 0 0 0 3px rgba(11, 75, 198, 0.15);
 }
 
 .tf-calendar-approve-button{
     padding: 10px 20px;
-      background-color: #0b4bc6; /* niebieski akcent nawiązujący do nagłówka */
+      background-color: var(--tf-contrast);
       color: #ffffff;
       border: none;
       border-radius: 12px;
@@ -343,65 +348,6 @@ body.tf-body {
       margin-left: auto;
 }
 
-.tf-legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 12px;
-    margin: 15px 0;
-    color: var(--tf-muted);
-    font-size: 10px;
-}
-
-.tf-legend span {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.tf-dot {
-    width: 10px;
-    height: 10px;
-    display: inline-block;
-    flex-shrink: 0;
-    border-radius: 3px;
-}
-
-.tf-dot-orange { background: var(--tf-orange); }
-.tf-dot-peach { background: #f8b38e; }
-.tf-dot-pale { background: #fce7dc; }
-
-.tf-notice {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 12px;
-    border-radius: 12px;
-    background: #fff3e5;
-    line-height: 1.5;
-    font-size: 12px;
-}
-
-.tf-notice-icon {
-    color: var(--tf-orange);
-    font-size: 18px;
-}
-
-.tf-text-link {
-    display: inline-block;
-    margin-top: 13px;
-    color: #4d6384;
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.tf-text-link:hover {
-    color: var(--tf-orange);
-}
-
-
-.tf-mini-progress .tf-progress-navy {
-    background: var(--tf-navy);
-}
 
 /* BOOTSTRAP ALERTS */
 

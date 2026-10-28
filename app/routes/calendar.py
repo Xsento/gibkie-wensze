@@ -28,7 +28,7 @@ def show():
     except CalendarError as e:
         flash(str(e), "danger")
         return redirect(url_for("main.index"))
-    return render_template("calendar-test.html", view=view, form=DayForm(), range_form=RangeForm())
+    return render_template("index.html", view=view, form=DayForm(), range_form=RangeForm())
 
 
 @bp.route("/toggle", methods=["POST"])
