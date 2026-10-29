@@ -35,6 +35,7 @@ class CalendarView:
     trip_title: str
     members_count: int
     is_organizer: bool
+    locked: bool             # True po zatwierdzeniu terminu: nikt już nie zaznacza dni
     year: int
     month: int
     month_label: str
@@ -86,6 +87,7 @@ def get_calendar(member_id, year=None, month=None):
         trip_title=trip.title,
         members_count=members,
         is_organizer=member.is_organizer,
+        locked=_is_locked(trip),
         year=year,
         month=month,
         month_label=f"{MONTHS[month - 1]} {year}",
@@ -98,6 +100,7 @@ def get_calendar(member_id, year=None, month=None):
 
 def toggle_day(member_id, day):
     member = _get_member(member_id)
+    _check_not_locked(member.trip)
     _check_in_window(member.trip, day, day)
 
     availability = repo.get_availability(member.id, day)
@@ -112,8 +115,9 @@ def approve_range(member_id, start, end):
     member = _get_member(member_id)
     if not member.is_organizer:
         raise CalendarError("Tylko organizator może zatwierdzić termin.")
-    _check_range(start, end)
     trip = member.trip
+    _check_not_locked(trip)
+    _check_range(start, end)
     _check_in_window(trip, start, end)
     trip.approved_start, trip.approved_end = start, end
     repo.save(trip)
@@ -137,6 +141,15 @@ def _range_label(start, end):
     if (start.year, start.month) == (end.year, end.month):
         return f"{start.day}–{end.day} {MONTHS_GENITIVE[end.month - 1]}"
     return f"{start.day} {MONTHS_GENITIVE[start.month - 1]} – {end.day} {MONTHS_GENITIVE[end.month - 1]}"
+
+
+def _is_locked(trip):
+    return trip.approved_start is not None
+
+
+def _check_not_locked(trip):
+    if _is_locked(trip):
+        raise CalendarError("Termin jest już zatwierdzony, nie można zmieniać wyboru dni.")
 
 
 def _check_range(start, end):

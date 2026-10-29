@@ -30,9 +30,11 @@
                         </span>
                     </h2>
 
+                    {% if view.approved_label %}
                     <span class="tf-badge tf-badge-success">
-                        tu laduje ustalona date
+                        Zatwierdzono {{ view.approved_label }}
                     </span>
+                    {% endif %}
                 </div>
 
 
@@ -61,7 +63,7 @@
 
                                 {% if not d.in_month %}
                                     <span class="day-number">{{ d.day.day }}</span>
-                                {% elif not d.in_window %}
+                                {% elif view.locked or not d.in_window %}
                                     <span class="day-number">{{ d.day.day }}</span>
                                 {% else %}
                                     <form method="post"
@@ -81,7 +83,7 @@
                     {% endfor %}
                 </div>
 
-                {% if view.is_organizer %}
+                {% if view.is_organizer and not view.locked %}
                 <div class="tf-calendar-approve">
                     <h2>Zatwierdź termin</h2>
                     <form method="post" action="{{ url_for('calendar.approve') }}" class="tf-calendar-approve-form">

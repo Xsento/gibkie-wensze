@@ -19,7 +19,7 @@
                background:{{ {'all': '#e0531f', 'most': '#f4a582', 'few': '#fde0d0'}.get(d.level, 'white') }}">
       {% if not d.in_month %}
         <span style="color:#bbb">{{ d.day.day }}</span>
-      {% elif not d.in_window %}
+      {% elif view.locked or not d.in_window %}
         {{ d.day.day }}
       {% else %}
         <form method="post" action="{{ url_for('calendar.toggle') }}">
@@ -34,7 +34,7 @@
   {% endfor %}
 </table>
 
-{% if view.is_organizer %}
+{% if view.is_organizer and not view.locked %}
 <h2>Zatwierdź termin</h2>
 <form method="post" action="{{ url_for('calendar.approve') }}">
   {{ range_form.csrf_token }}

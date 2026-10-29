@@ -78,8 +78,24 @@ def test_organizer_marks_and_approves(app):
         view = calendar_service.get_calendar(TOMASZ)
         assert view.approved_label == "18–21 września"
         assert day_of(view, date(2026, 9, 21)).approved and not day_of(view, date(2026, 9, 22)).approved
+        assert view.locked
+
+
+def test_approved_range_locks_calendar(app):
+    with app.app_context():
+        assert not calendar_service.get_calendar(TOMASZ).locked
+        calendar_service.toggle_day(TOMASZ, date(2026, 9, 18))
         calendar_service.approve_range(ORGANIZATOR, date(2026, 9, 30), date(2026, 10, 2))
         view = calendar_service.get_calendar(TOMASZ)
+        assert view.locked and view.approved_label == "30 września – 2 października"
+        # po zatwierdzeniu nikt nie zmienia wyboru, organizator też nie zatwierdza ponownie
+        for member in (TOMASZ, PAWEL, ORGANIZATOR):
+            with pytest.raises(CalendarError):
+                calendar_service.toggle_day(member, date(2026, 9, 18))
+        with pytest.raises(CalendarError):
+            calendar_service.approve_range(ORGANIZATOR, date(2026, 9, 18), date(2026, 9, 21))
+        view = calendar_service.get_calendar(TOMASZ)
+        assert day_of(view, date(2026, 9, 18)).available_count == 1  # wcześniejsze wybory zostają
         assert view.approved_label == "30 września – 2 października"
 
 
@@ -129,6 +145,13 @@ def test_routes(app):
         view = calendar_service.get_calendar(TOMASZ)
         assert view.approved_label == "5–8 października"
         assert day_of(view, date(2026, 10, 5)).available_count == 2
+
+    # po zatwierdzeniu: brak przycisków dni i formularza, klik daje komunikat
+    page = client.get("/?rok=2026&miesiac=10").get_data(as_text=True)
+    assert "tf-calendar-button" not in page and "Zatwierdź termin" not in page
+    assert "Zatwierdzono 5–8 października" in page
+    r = client.post("/toggle", data={"day": "2026-10-06"}, follow_redirects=True)
+    assert "Termin jest już zatwierdzony" in r.get_data(as_text=True)
 
 
 def test_init_db(app):
