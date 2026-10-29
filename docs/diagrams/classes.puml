@@ -1,0 +1,82 @@
+@startuml 01-klasy
+title TripForge – diagram klas modelu dziedziny (wg .specify/spec.md)
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+hide empty methods
+
+class User {
+  id : Integer
+  email : String {unique}
+  password_hash : String
+  name : String
+  is_organizer : Boolean
+}
+
+class Availability {
+  user_id : Integer
+  day : Date
+  --
+  «unique» (user_id, day)
+}
+
+class Proposal {
+  id : Integer
+  kind : String {nocleg | atrakcja}
+  title : String
+}
+
+class Vote {
+  user_id : Integer
+  proposal_id : Integer
+  --
+  «unique» (user_id, proposal_id)
+}
+
+class Event {
+  id : Integer
+  name : String
+  date : Date
+  time : Time
+  place : String
+}
+
+class Cost {
+  id : Integer
+  category : String
+  amount_gr : Integer
+}
+
+User "1" -- "0..*" Availability : zaznacza >
+User "0..*" -- "0..*" Proposal : głosuje na >
+(User, Proposal) .. Vote
+
+note right of Availability
+  US-1 / FR-1: wpis = „jestem dostępny tego dnia”.
+  Zaznaczenie dodaje wpis, odznaczenie go usuwa.
+  Licznik dnia = liczba wpisów z tym day.
+end note
+
+note right of Vote
+  US-2 / FR-2: 1 głos użytkownika na propozycję;
+  liczba głosów = liczba wpisów z danym proposal_id.
+end note
+
+note bottom of Event
+  US-3 / FR-3: dodaje tylko użytkownik
+  z is_organizer = true; lista sortowana
+  wg date, time.
+end note
+
+note bottom of Cost
+  US-4 / FR-4: kwoty w groszach (NFR-1: błąd 0 gr).
+  suma = Σ amount_gr,
+  koszt na osobę = suma / liczba uczestników (User).
+end note
+
+note left of User
+  US-5 / FR-5: logowanie e-mailem i hasłem.
+  NFR-4: hasło tylko jako hash.
+  is_organizer rozróżnia Organizatora i Uczestnika.
+end note
+@enduml

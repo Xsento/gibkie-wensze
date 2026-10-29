@@ -16,7 +16,6 @@ def app(tmp_path):
                       "SQLALCHEMY_DATABASE_URI": f"sqlite:///{tmp_path / 'test.db'}"})
     with app.app_context():
         db.create_all()
-        # okno wyjazdu: 1 września – 31 października 2026
         calendar_service.create_trip("Majówka", date(2026, 9, 1), date(2026, 10, 31),
                                      "Arek", ["Tomasz", "Paweł", "Ola"])
     return app
@@ -27,7 +26,6 @@ def day_of(view, d):
 
 
 def test_month_grid_starts_on_monday(app):
-    # wrzesień 2026 zaczyna się we wtorek, więc poniedziałek to 31 sierpnia
     with app.app_context():
         view = calendar_service.get_calendar(TOMASZ, 2026, 9)
     first_week = view.weeks[0]
@@ -35,13 +33,13 @@ def test_month_grid_starts_on_monday(app):
     assert [d.day.day for d in first_week] == [31, 1, 2, 3, 4, 5, 6]
     assert not first_week[0].in_month and first_week[1].in_month
     assert all(len(week) == 7 for week in view.weeks)
-    assert view.weeks[-1][-1].day == date(2026, 10, 4)  # ostatni tydzień kończy się w niedzielę
+    assert view.weeks[-1][-1].day == date(2026, 10, 4)
 
 
 def test_default_month_and_navigation(app):
     with app.app_context():
         view = calendar_service.get_calendar(TOMASZ)
-        assert (view.year, view.month) == (2026, 9)  # domyślnie miesiąc początku okna
+        assert (view.year, view.month) == (2026, 9)
         assert view.prev_month == (2026, 8) and view.next_month == (2026, 10)
         december = calendar_service.get_calendar(TOMASZ, 2026, 12)
         assert december.next_month == (2027, 1)
@@ -49,8 +47,6 @@ def test_default_month_and_navigation(app):
 
 
 def test_toggle_and_levels(app):
-    # kryterium akceptacji US-1: po wybraniu dnia rośnie licznik dostępnych osób
-    # 4 osoby razem z organizatorem: 1–2 = niewielu, 3 = większość, 4 = wszyscy
     d = date(2026, 9, 18)
     with app.app_context():
         calendar_service.toggle_day(TOMASZ, d)
@@ -63,7 +59,7 @@ def test_toggle_and_levels(app):
         assert day_of(view, d).available_count == 4 and day_of(view, d).level == "all"
         assert day_of(view, d).share == 1.0 and day_of(view, date(2026, 9, 19)).share == 0.0
         assert day_of(view, d).mine and view.members_count == 4
-        calendar_service.toggle_day(OLA, d)  # odznaczenie
+        calendar_service.toggle_day(OLA, d)
         assert day_of(calendar_service.get_calendar(TOMASZ, 2026, 9), d).available_count == 3
         assert day_of(calendar_service.get_calendar(TOMASZ, 2026, 9), d).share == 0.75
 
@@ -88,20 +84,19 @@ def test_approved_range_locks_calendar(app):
         calendar_service.approve_range(ORGANIZATOR, date(2026, 9, 30), date(2026, 10, 2))
         view = calendar_service.get_calendar(TOMASZ)
         assert view.locked and view.approved_label == "30 września – 2 października"
-        # po zatwierdzeniu nikt nie zmienia wyboru, organizator też nie zatwierdza ponownie
         for member in (TOMASZ, PAWEL, ORGANIZATOR):
             with pytest.raises(CalendarError):
                 calendar_service.toggle_day(member, date(2026, 9, 18))
         with pytest.raises(CalendarError):
             calendar_service.approve_range(ORGANIZATOR, date(2026, 9, 18), date(2026, 9, 21))
         view = calendar_service.get_calendar(TOMASZ)
-        assert day_of(view, date(2026, 9, 18)).available_count == 1  # wcześniejsze wybory zostają
+        assert day_of(view, date(2026, 9, 18)).available_count == 1
         assert view.approved_label == "30 września – 2 października"
 
 
 @pytest.mark.parametrize("start, end", [
-    (date(2026, 9, 21), date(2026, 9, 18)),  # odwrócony zakres
-    (date(2026, 10, 30), date(2026, 11, 2)),  # poza oknem
+    (date(2026, 9, 21), date(2026, 9, 18)),
+    (date(2026, 10, 30), date(2026, 11, 2)),
 ])
 def test_approve_validation(app, start, end):
     with app.app_context(), pytest.raises(CalendarError):
@@ -121,14 +116,14 @@ def test_create_trip_validation(app, title, start, end):
 def test_errors(app):
     with app.app_context():
         with pytest.raises(CalendarError):
-            calendar_service.toggle_day(TOMASZ, date(2026, 11, 1))  # poza oknem
+            calendar_service.toggle_day(TOMASZ, date(2026, 11, 1))
         with pytest.raises(CalendarError):
-            calendar_service.get_calendar(99)  # nie ma takiego uczestnika
+            calendar_service.get_calendar(99)
 
 
 def test_routes(app):
     client = app.test_client()
-    r = client.get("/")  # nie wybrano uczestnika: strona się wyświetla z komunikatem
+    r = client.get("/")
     assert r.status_code == 200 and "Wybierz uczestnika" in r.get_data(as_text=True)
     client.get("/jako/2")
     page = client.get("/?rok=2026&miesiac=10").get_data(as_text=True)
@@ -139,14 +134,13 @@ def test_routes(app):
         assert day_of(calendar_service.get_calendar(TOMASZ, 2026, 10), date(2026, 10, 5)).available_count == 1
 
     client.get("/jako/1")
-    client.post("/toggle", data={"day": "2026-10-05"})  # organizator też zaznacza
+    client.post("/toggle", data={"day": "2026-10-05"})
     client.post("/zatwierdz", data={"start_date": "2026-10-05", "end_date": "2026-10-08"})
     with app.app_context():
         view = calendar_service.get_calendar(TOMASZ)
         assert view.approved_label == "5–8 października"
         assert day_of(view, date(2026, 10, 5)).available_count == 2
 
-    # po zatwierdzeniu: brak przycisków dni i formularza, klik daje komunikat
     page = client.get("/?rok=2026&miesiac=10").get_data(as_text=True)
     assert "tf-calendar-button" not in page and "Zatwierdź termin" not in page
     assert "Zatwierdzono 5–8 października" in page

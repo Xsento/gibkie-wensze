@@ -1,0 +1,118 @@
+@startuml 03-sekwencja-toggle
+title TripForge – diagram sekwencji: uczestnik zaznacza / odznacza dzień (POST /toggle)
+
+skinparam shadowing false
+skinparam sequenceMessageAlign left
+skinparam responseMessageBelowArrow true
+
+actor "Uczestnik\n(przeglądarka)" as U
+participant "toggle\n<<Flask view>>\nroutes/calendar.py" as V
+participant "form :\nDayForm" as F
+participant "Flask\n(session, flash,\nredirect)" as FL
+participant "calendar_service\n<<module>>" as S
+participant "calendar_repository\n<<module>>" as R
+participant "db.session\n<<SQLAlchemy>>" as ORM
+participant "availability :\nAvailability" as A
+database "PostgreSQL" as DB
+
+U -> V : 1: POST /toggle (day, csrf_token)
+activate V
+V -> F : 1.1: «create» DayForm()
+V -> F : 1.2: validate_on_submit()
+activate F
+note right of F : CSRF, InputRequired,\nparsowanie DateField
+F --> V : True / False
+deactivate F
+
+alt formularz poprawny
+  V -> FL : 1.3: session.get("member_id")
+  FL --> V : member_id albo None
+  V -> S : 1.4: toggle_day(member_id, day)
+  activate S
+
+  S -> S : 1.4.1: _get_member(member_id)
+  opt member_id nie jest pusty
+    S -> R : 1.4.1.1: get_member(member_id)
+    activate R
+    R -> ORM : 1.4.1.1.1: get(TripMember, member_id)
+    activate ORM
+    ORM -> DB : 1.4.1.1.1.1: SELECT … FROM trip_members
+    ORM --> R : TripMember albo None
+    deactivate ORM
+    R --> S : member albo None
+    deactivate R
+  end
+  break member is None
+    S --> V : «raise» CalendarError("Nie jesteś uczestnikiem tego wyjazdu.")
+    V -> FL : 1.5: flash(str(e), "danger")
+  end
+
+  S -> ORM : 1.4.2: member.trip (lazy load)
+  activate ORM
+  ORM -> DB : 1.4.2.1: SELECT … FROM trips
+  ORM --> S : trip
+  deactivate ORM
+
+  S -> S : 1.4.3: _check_not_locked(trip)
+  break trip.approved_start is not None
+    S --> V : «raise» CalendarError("Termin jest już zatwierdzony…")
+    V -> FL : 1.5: flash(str(e), "danger")
+  end
+
+  S -> S : 1.4.4: _check_in_window(trip, day, day)
+  break day < trip.start_date lub day > trip.end_date
+    S --> V : «raise» CalendarError("Wybierz dni od … do …")
+    V -> FL : 1.5: flash(str(e), "danger")
+  end
+
+  S -> R : 1.4.5: get_availability(member.id, day)
+  activate R
+  R -> ORM : 1.4.5.1: Availability.query.filter_by(trip_member_id, day).first()
+  activate ORM
+  ORM -> DB : 1.4.5.1.1: SELECT … FROM availabilities
+  ORM --> R : Availability albo None
+  deactivate ORM
+  R --> S : availability albo None
+  deactivate R
+
+  alt availability is None
+    S -> A : 1.4.6: «create» Availability(trip_member_id=member.id, day, state=True)
+  else availability istnieje
+    S -> A : 1.4.6: state = not state
+  end
+
+  S -> R : 1.4.7: save(availability)
+  activate R
+  R -> ORM : 1.4.7.1: add(availability)
+  R -> ORM : 1.4.7.2: commit()
+  activate ORM
+  ORM -> DB : 1.4.7.2.1: INSERT INTO availabilities … albo UPDATE availabilities SET state …; COMMIT
+  deactivate ORM
+  R --> S : availability
+  deactivate R
+  S --> V : None
+  deactivate S
+end
+
+V -> V : 1.6: flash_errors(form)
+loop dla każdego błędu w form.errors
+  V -> FL : 1.6.1: flash(error, "danger")
+end
+
+V -> V : 1.7: back_to(form.day.data)
+alt form.day.data jest datą
+  V -> FL : 1.7.1: redirect(url_for("main.index", rok=day.year, miesiac=day.month))
+else brak poprawnej daty
+  V -> FL : 1.7.1: redirect(url_for("main.index"))
+end
+FL --> V : Response 302
+V --> U : 302 Found, Location: /?rok=…&miesiac=…
+deactivate V
+
+note over U, V
+  Przeglądarka wykonuje potem osobne żądanie GET /
+  (main.index → calendar_service.get_calendar), które
+  pokazuje zmieniony licznik i komunikaty flash.
+  To osobny proces, nie jest częścią tego diagramu.
+end note
+@enduml

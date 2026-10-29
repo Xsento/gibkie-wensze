@@ -1,0 +1,44 @@
+@startuml 02-komunikacja-toggle
+title TripForge – diagram komunikacji: uczestnik zaznacza / odznacza dzień (POST /toggle)
+
+allowmixing
+skinparam shadowing false
+skinparam nodesep 80
+skinparam ranksep 80
+
+actor "Uczestnik\n(przeglądarka)" as U
+object "toggle\n<<Flask view>>\nroutes/calendar.py" as V
+object "form : DayForm" as F
+object "Flask\n(session, flash, redirect)" as FL
+object "calendar_service\n<<module>>" as S
+object "calendar_repository\n<<module>>" as R
+object "db.session\n<<SQLAlchemy Session>>" as ORM
+object "availability : Availability" as A
+database "PostgreSQL" as DB
+
+U --> V : 1: POST /toggle (day, csrf_token)\n[odpowiedź: 302 Found → /?rok=…&miesiac=…]
+V --> F : 1.1: «create» DayForm()\n1.2: validate_on_submit()
+V --> FL : 1.3 [formularz poprawny]: session.get("member_id")\n1.5 [CalendarError]: flash(str(e), "danger")\n1.6.1 *[dla każdego błędu w form.errors]: flash(error, "danger")\n1.7.1: redirect(url_for("main.index", rok, miesiac))
+V --> V : 1.6: flash_errors(form)\n1.7: back_to(form.day.data)
+V --> S : 1.4 [formularz poprawny]: toggle_day(member_id, day)
+S --> S : 1.4.1: _get_member(member_id)\n1.4.3: _check_not_locked(trip)\n1.4.4: _check_in_window(trip, day, day)
+S --> R : 1.4.1.1 [member_id]: get_member(member_id)\n1.4.5: get_availability(member.id, day)\n1.4.7: save(availability)
+S --> ORM : 1.4.2: member.trip (lazy load)
+R --> ORM : 1.4.1.1.1: get(TripMember, member_id)\n1.4.5.1: Availability.query.filter_by(...).first()\n1.4.7.1: add(availability)\n1.4.7.2: commit()
+ORM --> DB : 1.4.1.1.1.1: SELECT trip_members\n1.4.2.1: SELECT trips\n1.4.5.1.1: SELECT availabilities\n1.4.7.2.1: INSERT albo UPDATE availabilities; COMMIT
+S --> A : 1.4.6 [availability is None]: «create» Availability(trip_member_id, day, state=True)\n1.4.6 [availability istnieje]: state = not state
+
+note bottom of S
+  CalendarError zgłoszony w 1.4.1 (brak uczestnika),
+  1.4.3 (termin zatwierdzony) albo 1.4.4 (dzień poza oknem)
+  przerywa toggle_day bez zapisu (1.4.5–1.4.7 się nie wykonują).
+  Widok toggle łapie wyjątek i wykonuje 1.5.
+end note
+
+note top of F
+  [formularz niepoprawny]
+  (brak / zła data, brak CSRF):
+  1.3–1.5 są pomijane,
+  błędy wysyła 1.6.1.
+end note
+@enduml

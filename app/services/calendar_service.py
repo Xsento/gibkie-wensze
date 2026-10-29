@@ -24,7 +24,7 @@ class CalendarDay:
     in_window: bool
     available_count: int
     level: str
-    share: float          # jaka część grupy wybrała ten dzień: 0.0 (nikt) … 1.0 (wszyscy)
+    share: float
     mine: bool
     approved: bool
 
@@ -35,7 +35,7 @@ class CalendarView:
     trip_title: str
     members_count: int
     is_organizer: bool
-    locked: bool             # True po zatwierdzeniu terminu: nikt już nie zaznacza dni
+    locked: bool
     year: int
     month: int
     month_label: str

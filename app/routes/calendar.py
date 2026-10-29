@@ -4,7 +4,6 @@ from app.forms import DayForm, RangeForm
 from app.services import calendar_service
 from app.services.calendar_service import CalendarError
 
-# Akcje kalendarza. Sam kalendarz wyświetla strona główna "/" (routes/main.py).
 bp = Blueprint("calendar", __name__)
 
 
