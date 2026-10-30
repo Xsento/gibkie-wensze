@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: tripforge
+    container_name: tripforge_db
     restart: unless-stopped
     environment:
       POSTGRES_USER: gibki_wonsz
@@ -11,6 +11,19 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  web:
+    build: .
+    container_name: tripforge_web
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    environment:
+      - DATABASE_URL=postgresql://gibki_wonsz:januszpawlacz@db:5432/tripforge_db
+    depends_on:
+      - db
 
 volumes:
   postgres_data:
