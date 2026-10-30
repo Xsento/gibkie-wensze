@@ -1,5 +1,22 @@
 from sqlalchemy import UniqueConstraint
 from app.extensions import db
+from werkzeug.security import generate_password_hash, check_password_hash
+
+class User(db.Mode):
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False)
+    name = db.Column(db.String(80), nullable=False)
+
+    memberships = db.relationship('TripMember', backref='user', lazy=True)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 
 class Trip(db.Model):
@@ -22,6 +39,7 @@ class TripMember(db.Model):
     trip_id = db.Column(db.Integer, db.ForeignKey('trips.id', ondelete='CASCADE'), nullable=False)
     name = db.Column(db.String(80), nullable=False)
     is_organizer = db.Column(db.Boolean, nullable=False, default=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
 
     availabilities = db.relationship('Availability', backref='member', lazy=True, cascade='all, delete-orphan')
 
