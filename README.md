@@ -20,12 +20,15 @@ Projekt powstał na zajęcia z **Inżynierii Oprogramowania**. Zespół liczy 3 
 
 ## 🗂️ Artefakty projektu
 
-| Artefakt                  | Gdzie                                                                | Opis                                                         |
-| ------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------ |
-| Historie użytkownika      | [`use_case.md`](use_case.md)                                         | 5 historii w standardzie INVEST z kryteriami Given-When-Then |
-| Diagram przypadków użycia | [`docs/diagramy/use-case.puml`](docs/diagramy/use-case.puml)         | Aktorzy, przypadki użycia, relacje «include» i «extend»      |
-| Diagram wymagań           | [`docs/diagramy/requirements.puml`](docs/diagramy/requirements.puml) | 5 FR i 6 NFR z kategoriami SQuaRE i metrykami                |
-| Specyfikacja SDD          | [`.specify/spec.md`](.specify/spec.md)                               | Jedno źródło prawdy o wymaganiach                            |
+| Artefakt                  | Gdzie                                                                  | Opis                                                          |
+| ------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Historie użytkownika      | [`use_case.md`](use_case.md)                                           | 5 historii w standardzie INVEST z kryteriami Given-When-Then  |
+| Diagram przypadków użycia | [`docs/diagrams/use-case.puml`](docs/diagrams/use-case.puml)           | Aktorzy, przypadki użycia, relacje «include» i «extend»       |
+| Diagram wymagań           | [`docs/diagrams/requirements.puml`](docs/diagrams/requirements.puml)   | 5 FR i 6 NFR z kategoriami SQuaRE i metrykami                 |
+| Diagram klas              | [`docs/diagrams/classes.puml`](docs/diagrams/classes.puml)             | Model dziedziny ze specyfikacji: 6 encji, relacje i krotności |
+| Diagram komunikacji       | [`docs/diagrams/communication.puml`](docs/diagrams/communication.puml) | US-1 zaznaczanie dostępności według założeń                   |
+| Diagram sekwencji         | [`docs/diagrams/sequence.puml`](docs/diagrams/sequence.puml)           | US-1 zaznaczanie dostępności według założeń                   |
+| Specyfikacja SDD          | [`.specify/spec.md`](.specify/spec.md)                                 | Jedno źródło prawdy o wymaganiach                             |
 
 Wszystkie artefakty używają tych samych identyfikatorów (US-1…US-5, FR-1…FR-5, NFR-1…NFR-6), więc od historii można przejść do wymagania i diagramu.
 
@@ -38,7 +41,17 @@ Wszystkie artefakty używają tych samych identyfikatorów (US-1…US-5, FR-1…
 
 ## 📐 Diagramy
 
-Pliki `.puml` renderuje się w VS Code rozszerzeniem **PlantUML** (Alt+D). W ustawieniach rozszerzenia trzeba wybrać `Plantuml: Render` = `Local`, co wymaga zainstalowanej Javy.
+Wszystkie diagramy leżą w [`docs/diagrams/`](docs/diagrams) i są zapisane w PlantUML.
+
+| Diagram           | Plik                                                     | Co pokazuje                                                                     |
+| ----------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Przypadki użycia  | [`use-case.puml`](docs/diagrams/use-case.puml)           | Aktorzy (Użytkownik, Uczestnik, Organizator) i 5 historii                       |
+| Wymagania (SysML) | [`requirements.puml`](docs/diagrams/requirements.puml)   | FR-1…FR-5 i NFR z metrykami                                                     |
+| Klasy (UML)       | [`classes.puml`](docs/diagrams/classes.puml)             | `User`, `Availability`, `Proposal`, `Vote` (klasa asocjacyjna), `Event`, `Cost` |
+| Komunikacja (UML) | [`communication.puml`](docs/diagrams/communication.puml) | US-1: zalogowany uczestnik zaznacza albo odznacza dzień                         |
+| Sekwencja (UML)   | [`sequence.puml`](docs/diagrams/sequence.puml)           | Ten sam scenariusz US-1 w kolejności czasowej                                   |
+
+**Renderowanie:** w VS Code rozszerzeniem **PlantUML** (Alt+D). W ustawieniach rozszerzenia trzeba wybrać `Plantuml: Render` = `Local`, co wymaga zainstalowanej Javy. Diagramy klas, komponentów i komunikacji potrzebują też **Graphviza**. Bez niego dopisz pod `@startuml` linię `!pragma layout smetana`.
 
 ## 👥 Zespół
 
