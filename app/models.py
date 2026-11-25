@@ -2,7 +2,7 @@ from sqlalchemy import UniqueConstraint
 from app.extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
-class User(db.Mode):
+class User(db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -42,6 +42,12 @@ class TripMember(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
 
     availabilities = db.relationship('Availability', backref='member', lazy=True, cascade='all, delete-orphan')
+
+    # jeden użytkownik może być tylko raz uczestnikiem danego wyjazdu,
+    # dzięki temu jego dostępność nie jest liczona wielokrotnie
+    __table_args__ = (
+        UniqueConstraint('trip_id', 'user_id', name='uq_trip_user'),
+    )
 
 
 class Availability(db.Model):

@@ -4,7 +4,7 @@ from app.extensions import db
 
 def create_app(test_config=None):
     app = Flask(__name__)
-    app.config["SECRET_KEY"] = "dev"
+    app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "dev")
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
         'DATABASE_URL',
         'postgresql+psycopg2://gibki_wonsz:januszpawlacz@localhost:5432/tripforge_db'
@@ -12,6 +12,8 @@ def create_app(test_config=None):
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     if test_config:
         app.config.update(test_config)
+    # tymczasowe /jako/<id> (bez hasła) tylko w testach albo po ustawieniu ALLOW_ACT_AS=1
+    app.config.setdefault("ALLOW_ACT_AS", bool(app.config.get("TESTING")) or os.getenv("ALLOW_ACT_AS") == "1")
 
     db.init_app(app)
 

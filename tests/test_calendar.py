@@ -4,6 +4,7 @@ import pytest
 
 from app import create_app
 from app.extensions import db
+from app.models import User
 from app.services import calendar_service
 from app.services.calendar_service import CalendarError
 
@@ -16,9 +17,18 @@ def app(tmp_path):
                       "SQLALCHEMY_DATABASE_URI": f"sqlite:///{tmp_path / 'test.db'}"})
     with app.app_context():
         db.create_all()
+        users = [make_user(name) for name in ("Arek", "Tomasz", "Paweł", "Ola")]
         calendar_service.create_trip("Majówka", date(2026, 9, 1), date(2026, 10, 31),
-                                     "Arek", ["Tomasz", "Paweł", "Ola"])
+                                     users[0], users[1:])
     return app
+
+
+def make_user(name):
+    user = User(name=name, email=f"{name.lower()}@test.local")
+    user.set_password("test")
+    db.session.add(user)
+    db.session.commit()
+    return user
 
 
 def day_of(view, d):
@@ -110,7 +120,7 @@ def test_approve_validation(app, start, end):
 ])
 def test_create_trip_validation(app, title, start, end):
     with app.app_context(), pytest.raises(CalendarError):
-        calendar_service.create_trip(title, start, end, "Arek")
+        calendar_service.create_trip(title, start, end, db.session.get(User, 1))
 
 
 def test_errors(app):

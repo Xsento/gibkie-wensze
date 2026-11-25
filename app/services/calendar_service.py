@@ -3,6 +3,8 @@ import calendar
 from dataclasses import dataclass
 from datetime import date
 
+from sqlalchemy.exc import IntegrityError
+
 from app.models import Availability
 from app.repositories import calendar_repository as repo
 
@@ -23,6 +25,8 @@ class CalendarDay:
     in_month: bool
     in_window: bool
     available_count: int
+    others_count: int
+    names: list
     level: str
     share: float
     mine: bool
@@ -33,6 +37,8 @@ class CalendarDay:
 class CalendarView:
     trip_id: int
     trip_title: str
+    user_name: str
+    trips: list
     members_count: int
     is_organizer: bool
     locked: bool
@@ -45,24 +51,29 @@ class CalendarView:
     approved_label: str
 
 
-def create_trip(title, start_date, end_date, organizer_name, member_names=()):
+def create_trip(title, start_date, end_date, organizer, members=()):
     title = (title or "").strip()
     if not title:
         raise CalendarError("Tytuł wyjazdu jest wymagany.")
     _check_range(start_date, end_date)
     if (end_date - start_date).days + 1 > MAX_WINDOW_DAYS:
         raise CalendarError(f"Okno dat może mieć najwyżej {MAX_WINDOW_DAYS} dni.")
-    return repo.add_trip(title, start_date, end_date, organizer_name, member_names)
+    if organizer is None or any(user is None for user in members):
+        raise CalendarError("Uczestnik wyjazdu musi być istniejącym użytkownikiem.")
+    if len({u.id for u in (organizer, *members)}) != len(members) + 1:
+        raise CalendarError("Użytkownik może być tylko raz uczestnikiem wyjazdu.")
+    return repo.add_trip(title, start_date, end_date, organizer, members)
 
 
-def get_calendar(member_id, year=None, month=None):
-    member = _get_member(member_id)
+def get_calendar(member_id, year=None, month=None, trip_id=None):
+    member = _get_member(member_id, trip_id)
     trip = member.trip
     if year is None or month is None or not 1 <= month <= 12:
         start = trip.approved_start or trip.start_date
         year, month = start.year, start.month
 
     counts = repo.count_available_by_day(trip.id)
+    names = repo.available_names_by_day(trip.id)
     mine = repo.available_days_of_member(member.id)
     members = repo.count_members(trip.id)
 
@@ -74,6 +85,8 @@ def get_calendar(member_id, year=None, month=None):
                 in_month=d.month == month,
                 in_window=trip.start_date <= d <= trip.end_date,
                 available_count=counts.get(d, 0),
+                others_count=counts.get(d, 0) - (1 if d in mine else 0),
+                names=names.get(d, []),
                 level=_level(counts.get(d, 0), members),
                 share=round(counts.get(d, 0) / members, 2) if members else 0.0,
                 mine=d in mine,
@@ -85,6 +98,8 @@ def get_calendar(member_id, year=None, month=None):
     return CalendarView(
         trip_id=trip.id,
         trip_title=trip.title,
+        user_name=member.name,
+        trips=[(t.id, t.title) for t in repo.trips_of_user(member.user_id)],
         members_count=members,
         is_organizer=member.is_organizer,
         locked=_is_locked(trip),
@@ -98,8 +113,9 @@ def get_calendar(member_id, year=None, month=None):
     )
 
 
-def toggle_day(member_id, day):
-    member = _get_member(member_id)
+def toggle_day(member_id, day, trip_id=None):
+    # member pochodzi z sesji, więc użytkownik zmienia wyłącznie własną dostępność
+    member = _get_member(member_id, trip_id)
     _check_not_locked(member.trip)
     _check_in_window(member.trip, day, day)
 
@@ -108,11 +124,16 @@ def toggle_day(member_id, day):
         availability = Availability(trip_member_id=member.id, day=day, state=True)
     else:
         availability.state = not availability.state
-    repo.save(availability)
+    try:
+        repo.save(availability)
+    except IntegrityError:
+        # równoległe kliknięcie tego samego dnia: unikalność (member, day) blokuje duplikat
+        repo.rollback()
+        raise CalendarError("Ten dzień został właśnie zapisany. Odśwież kalendarz.")
 
 
-def approve_range(member_id, start, end):
-    member = _get_member(member_id)
+def approve_range(member_id, start, end, trip_id=None):
+    member = _get_member(member_id, trip_id)
     if not member.is_organizer:
         raise CalendarError("Tylko organizator może zatwierdzić termin.")
     trip = member.trip
@@ -162,8 +183,11 @@ def _check_in_window(trip, start, end):
         raise CalendarError(f"Wybierz dni od {trip.start_date:%d.%m.%Y} do {trip.end_date:%d.%m.%Y}.")
 
 
-def _get_member(member_id):
+def _get_member(member_id, trip_id=None):
     member = repo.get_member(member_id) if member_id else None
+    if member is not None and trip_id is not None and member.trip_id != trip_id:
+        # ten sam użytkownik może należeć do kilku wyjazdów
+        member = repo.get_membership(trip_id, member.user_id)
     if member is None:
         raise CalendarError("Nie jesteś uczestnikiem tego wyjazdu.")
     return member

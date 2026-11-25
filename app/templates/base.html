@@ -36,6 +36,13 @@
                     </span>
                 {% endif %}
 
+                {% if g.user %}
+                    <a href="{{ url_for('auth.logout') }}">Wyloguj</a>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}">Zaloguj</a>
+                    <a href="{{ url_for('auth.register') }}">Zarejestruj</a>
+                {% endif %}
+
                 <a href="#uczestnicy" class="btn tf-btn-primary">
                     Zaproś
                 </a>

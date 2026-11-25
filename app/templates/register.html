@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8">
+    <title>Rejestracja — TripForge</title>
+</head>
+<body>
+<h1>Załóż konto</h1>
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+        {% for message in messages %}<li>{{ message }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+{% endwith %}
+
+<form method="post" action="{{ url_for('auth.register') }}">
+    {{ form.csrf_token }}
+    <p>
+        {{ form.name.label }}<br>
+        {{ form.name(autocomplete="given-name", required=true) }}
+    </p>
+    <p>
+        {{ form.email.label }}<br>
+        {{ form.email(autocomplete="email", required=true) }}
+    </p>
+    <p>
+        {{ form.password.label }} (co najmniej 8 znaków)<br>
+        {{ form.password(autocomplete="new-password", required=true, minlength=8) }}
+    </p>
+    <p>
+        {{ form.confirm.label }}<br>
+        {{ form.confirm(autocomplete="new-password", required=true) }}
+    </p>
+    <button type="submit">Zarejestruj się</button>
+</form>
+
+<p>Masz już konto? <a href="{{ url_for('auth.login') }}">Zaloguj się</a></p>
+</body>
+</html>

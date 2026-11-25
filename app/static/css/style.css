@@ -497,3 +497,83 @@ body.tf-body {
         font-size: 9px;
     }
 }
+
+/* UC: dostępność uczestników – licznik osób, legenda i przełącznik wyjazdów */
+.tf-calendar-day {
+    position: relative;
+}
+
+.tf-calendar-button,
+.tf-calendar-day .day-number {
+    display: grid;
+    place-items: center;
+    line-height: 1;
+}
+
+.tf-calendar-day .day-number.is-selected {
+    font-weight: bold;
+}
+
+.tf-calendar-day.is-mine:not(:has(.tf-calendar-form)) {
+    box-shadow: inset 0 0 0 2px var(--tf-navy);
+}
+
+.tf-day-count {
+    display: block;
+    margin-top: 2px;
+    font-size: 9px;
+    font-weight: 650;
+    opacity: .85;
+}
+
+.tf-calendar-legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-top: 14px;
+    color: var(--tf-muted);
+    font-size: 11px;
+}
+
+.tf-calendar-legend > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.tf-calendar-legend .tf-day-count {
+    margin: 0;
+    color: var(--tf-text);
+}
+
+.tf-legend-swatch {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    background: #eef0f4;
+}
+
+.tf-legend-swatch.is-mine {
+    box-shadow: inset 0 0 0 2px var(--tf-navy);
+}
+
+.tf-legend-swatch.is-partial {
+    background: color-mix(in srgb, var(--tf-orange) 45%, #fce7dc);
+}
+
+.tf-legend-swatch.is-all {
+    background: var(--tf-orange);
+}
+
+.tf-trip-switch {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.tf-trip-switch a {
+    text-decoration: none;
+}

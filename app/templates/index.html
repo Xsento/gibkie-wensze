@@ -10,6 +10,16 @@
         <div class="tf-eyebrow">Wyjazd grupowy #{{ view.trip_id }} · Liczba osób: {{ view.members_count }}</div>
         <h1 class="tf-page-title">{{ view.trip_title }}</h1>
     </div>
+    {% if view.trips|length > 1 %}
+    <nav class="tf-trip-switch" aria-label="Twoje wyjazdy">
+        {% for trip_id, trip_title in view.trips %}
+            <a href="{{ url_for('main.index', wyjazd=trip_id) }}"
+               class="tf-badge {% if trip_id == view.trip_id %}tf-badge-success{% else %}tf-badge-pending{% endif %}">
+                {{ trip_title }}
+            </a>
+        {% endfor %}
+    </nav>
+    {% endif %}
 </section>
 
 <div class="row g-4">
@@ -22,11 +32,11 @@
 
                     <h2>
                         <span class="tf-month-change">
-                            <a href="{{ url_for('main.index', rok=view.prev_month[0], miesiac=view.prev_month[1]) }}">&lt;</a>
+                            <a href="{{ url_for('main.index', wyjazd=view.trip_id, rok=view.prev_month[0], miesiac=view.prev_month[1]) }}">&lt;</a>
                         </span>
                         {{ view.month_label }}
                         <span class="tf-month-change">
-                            <a href="{{ url_for('main.index', rok=view.next_month[0], miesiac=view.next_month[1]) }}">&gt;</a>
+                            <a href="{{ url_for('main.index', wyjazd=view.trip_id, rok=view.next_month[0], miesiac=view.next_month[1]) }}">&gt;</a>
                         </span>
                     </h2>
 
@@ -57,14 +67,17 @@
                                 {% elif d.level == 'most' %}is-partial is-most
                                 {% elif d.level %}is-partial
                                 {% endif %}
-                                {% if d.approved %}is-approved{% endif %}"
+                                {% if d.approved %}is-approved{% endif %}
+                                {% if d.mine %}is-mine{% endif %}"
                                  style="--share: {{ d.share }}"
-                                 title="{{ d.available_count }} z {{ view.members_count }} osób">
+                                 data-count="{{ d.available_count }}"
+                                 title="{{ d.available_count }} z {{ view.members_count }} osób{% if d.mine %} (w tym Ty){% endif %}{% if d.names %}: {{ d.names|join(', ') }}{% endif %}">
 
                                 {% if not d.in_month %}
                                     <span class="day-number">{{ d.day.day }}</span>
                                 {% elif view.locked or not d.in_window %}
-                                    <span class="day-number">{{ d.day.day }}</span>
+                                    <span class="day-number {% if d.mine %}is-selected{% endif %}">{{ d.day.day }}</span>
+                                    {% if d.available_count %}<span class="tf-day-count">{{ d.available_count }}/{{ view.members_count }}</span>{% endif %}
                                 {% else %}
                                     <form method="post"
                                           action="{{ url_for('calendar.toggle') }}"
@@ -73,8 +86,13 @@
                                         <input type="hidden"
                                                name="day"
                                                value="{{ d.day.isoformat() }}">
-                                        <button type="submit" class="tf-calendar-button {% if d.mine %}is-selected{% endif %}">
+                                        <input type="hidden" name="trip_id" value="{{ view.trip_id }}">
+                                        <button type="submit"
+                                                class="tf-calendar-button {% if d.mine %}is-selected{% endif %}"
+                                                aria-pressed="{{ 'true' if d.mine else 'false' }}"
+                                                aria-label="{{ d.day.day }}: {{ d.available_count }} z {{ view.members_count }} osób{% if d.mine %}, jesteś dostępny{% endif %}">
                                             {{ d.day.day }}
+                                            {% if d.available_count %}<span class="tf-day-count">{{ d.available_count }}/{{ view.members_count }}</span>{% endif %}
                                         </button>
                                     </form>
                                 {% endif %}
@@ -83,11 +101,19 @@
                     {% endfor %}
                 </div>
 
+                <div class="tf-legend tf-calendar-legend">
+                    <span><i class="tf-legend-swatch is-mine"></i>Twoja dostępność</span>
+                    <span><i class="tf-legend-swatch is-partial"></i>Dostępni inni uczestnicy</span>
+                    <span><i class="tf-legend-swatch is-all"></i>Dostępni wszyscy</span>
+                    <span><span class="tf-day-count">2/{{ view.members_count }}</span> osób dostępnych</span>
+                </div>
+
                 {% if view.is_organizer and not view.locked %}
                 <div class="tf-calendar-approve">
                     <h2>Zatwierdź termin</h2>
                     <form method="post" action="{{ url_for('calendar.approve') }}" class="tf-calendar-approve-form">
                         {{ range_form.csrf_token }}
+                        <input type="hidden" name="trip_id" value="{{ view.trip_id }}">
                         <div class="tf-inputs-group">
                             {{ range_form.start_date() }} <span>–</span> {{ range_form.end_date() }}
                         </div>
@@ -99,8 +125,11 @@
         </section>
     </div>
 </div>
+{% elif g.user %}
+<p>Nie należysz jeszcze do żadnego wyjazdu.</p>
 {% else %}
 <p>Wybierz uczestnika: <a href="/jako/1">/jako/1</a>, <a href="/jako/2">/jako/2</a>, <a href="/jako/3">/jako/3</a> (tymczasowo, do czasu logowania).</p>
+<p><a href="{{ url_for('auth.login') }}">Zaloguj się</a> albo <a href="{{ url_for('auth.register') }}">załóż konto</a>.</p>
 {% endif %}
 
 {% endblock %}
