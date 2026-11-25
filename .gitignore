@@ -19,6 +19,9 @@ htmlcov/
 # VS Code
 .vscode/
 
+# PyCharm
+.idea/
+
 # System
 Thumbs.db
 .DS_Store
