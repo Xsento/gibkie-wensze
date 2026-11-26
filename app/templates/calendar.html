@@ -32,14 +32,14 @@ block content %} {% if view %}
                         <span class="tf-month-change">
                             <a
                                 href="{{ url_for('main.calendar', wyjazd=view.trip_id, rok=view.prev_month[0], miesiac=view.prev_month[1]) }}"
-                                >&lt;</a
+                                >◀</a
                             >
                         </span>
                         {{ view.month_label }}
                         <span class="tf-month-change">
                             <a
                                 href="{{ url_for('main.calendar', wyjazd=view.trip_id, rok=view.next_month[0], miesiac=view.next_month[1]) }}"
-                                >&gt;</a
+                                >▶</a
                             >
                         </span>
                     </h2>
