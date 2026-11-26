@@ -1,46 +1,16 @@
-{% extends "base.html" %}
-
-{% block title %}Twoje podróże — TripForge{% endblock %}
-
-{% macro short_date(d) -%}
-    {%- set months = ["sty", "lut", "mar", "kwi", "maj", "cze", "lip", "sie", "wrz", "paź", "lis", "gru"] -%}
-    {{ d.day }} {{ months[d.month - 1] }} {{ d.year }}
-{%- endmacro %}
-
-{% block header %}
-<header class="tf-header">
-    <div class="container tf-container">
-        <div class="tf-topbar d-flex align-items-center justify-content-between gap-3">
-            <a href="{{ url_for('main.index') }}" class="tf-brand">
-                <span class="tf-logo" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 18 6-9 4 6 2-3 6 6"/><path d="m7 12 2 2 2-2"/></svg>
-                </span>
-                <span>TripForge</span>
-            </a>
-
-            <div class="dropdown">
-                <button type="button" class="tf-user-chip" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span class="tf-user-chip-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
-                    </span>
-                    <span class="tf-user-chip-name">{{ user.name }}</span>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Wyloguj</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</header>
-{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Twoje podróże — TripForge{% endblock
+%} {% macro short_date(d) -%} {%- set months = ["sty", "lut", "mar", "kwi",
+"maj", "cze", "lip", "sie", "wrz", "paź", "lis", "gru"] -%} {{ d.day }} {{
+months[d.month - 1] }} {{ d.year }} {%- endmacro %} {% block content %}
 
 <section class="tf-hero">
     <div class="tf-hero-content">
         <div class="tf-hero-eyebrow">Twoja przestrzeń podróży</div>
         <h1 class="tf-hero-title">Dokąd jedziecie następnym razem?</h1>
-        <p class="tf-hero-text">Zbierz ekipę, ustal termin i zacznij planować wszystko w jednym miejscu.</p>
+        <p class="tf-hero-text">
+            Zbierz ekipę, ustal termin i zacznij planować wszystko w jednym
+            miejscu.
+        </p>
         <a href="#" class="btn tf-btn-primary tf-hero-button">
             <span aria-hidden="true">+</span>
             <span>Utwórz nową podróż</span>
@@ -58,42 +28,115 @@
     </div>
 
     <div class="row g-3">
-        {% for member in memberships|sort(attribute="trip.start_date") %}
-        {% set trip = member.trip %}
+        {% for member in memberships|sort(attribute="trip.start_date") %} {% set
+        trip = member.trip %}
         <div class="col-12 col-md-6">
-            <article class="card tf-card tf-trip-card {{ loop.cycle('is-orange', 'is-blue') }}">
+            <article
+                class="card tf-card tf-trip-card {{ loop.cycle('is-orange', 'is-blue') }}"
+            >
                 <div class="card-body tf-card-body">
-
                     <div class="tf-trip-card-top">
                         <div>
-                            <span class="tf-role-badge">{{ "Organizujesz" if member.is_organizer else "Uczestniczysz" }}</span>
+                            <span class="tf-role-badge"
+                                >{{ "Organizujesz" if member.is_organizer else
+                                "Uczestniczysz" }}</span
+                            >
                             <h3 class="tf-trip-card-title">{{ trip.title }}</h3>
                         </div>
                         <span class="tf-trip-card-icon" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>
+                            <svg
+                                viewBox="0 0 24 24"
+                                width="16"
+                                height="16"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z" />
+                                <path d="M9 4v14M15 6v14" />
+                            </svg>
                         </span>
                     </div>
 
                     <ul class="tf-trip-meta">
                         <li>
-                            <svg aria-hidden="true" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>
+                            <svg
+                                aria-hidden="true"
+                                viewBox="0 0 24 24"
+                                width="13"
+                                height="13"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z" />
+                                <path d="M9 4v14M15 6v14" />
+                            </svg>
                             <span>Cel do ustalenia</span>
                         </li>
                         <li>
-                            <svg aria-hidden="true" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
-                            <span>{{ short_date(trip.start_date) }} – {{ short_date(trip.end_date) }}</span>
+                            <svg
+                                aria-hidden="true"
+                                viewBox="0 0 24 24"
+                                width="13"
+                                height="13"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <rect
+                                    x="3"
+                                    y="5"
+                                    width="18"
+                                    height="16"
+                                    rx="2"
+                                />
+                                <path d="M16 3v4M8 3v4M3 10h18" />
+                            </svg>
+                            <span
+                                >{{ short_date(trip.start_date) }} – {{
+                                short_date(trip.end_date) }}</span
+                            >
                         </li>
                         <li>
-                            <svg aria-hidden="true" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2 20a7 7 0 0 1 14 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M22 20a7 7 0 0 0-4-6.3"/></svg>
-                            <span>{{ trip.members|length }} osób · {{ trip.members|rejectattr("is_organizer")|map(attribute="name")|sort|join(", ") }}</span>
+                            <svg
+                                aria-hidden="true"
+                                viewBox="0 0 24 24"
+                                width="13"
+                                height="13"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <circle cx="9" cy="8" r="3.5" />
+                                <path d="M2 20a7 7 0 0 1 14 0" />
+                                <path
+                                    d="M16 4.5a3.5 3.5 0 0 1 0 7M22 20a7 7 0 0 0-4-6.3"
+                                />
+                            </svg>
+                            <span
+                                >{{ trip.members|length }} osób · {{
+                                trip.members|rejectattr("is_organizer")|map(attribute="name")|sort|join(",
+                                ") }}</span
+                            >
                         </li>
                     </ul>
 
-                    <a href="{{ url_for('main.calendar', wyjazd=trip.id) }}" class="tf-trip-card-link">
+                    <a
+                        href="{{ url_for('main.calendar', wyjazd=trip.id) }}"
+                        class="tf-trip-card-link"
+                    >
                         <span>Otwórz plan podróży</span>
                         <span aria-hidden="true">›</span>
                     </a>
-
                 </div>
             </article>
         </div>
