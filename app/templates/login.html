@@ -2,32 +2,118 @@
 <html lang="pl">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Logowanie — TripForge</title>
 </head>
-<body>
-<h1>Zaloguj się</h1>
+<body class="tf-body tf-auth">
 
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <ul>
-        {% for message in messages %}<li>{{ message }}</li>{% endfor %}
-    </ul>
-    {% endif %}
-{% endwith %}
+<div class="tf-auth-layout">
 
-<form method="post" action="{{ url_for('auth.login') }}">
-    {{ form.csrf_token }}
-    <p>
-        {{ form.email.label }}<br>
-        {{ form.email(autocomplete="email", required=true) }}
-    </p>
-    <p>
-        {{ form.password.label }}<br>
-        {{ form.password(autocomplete="current-password", required=true) }}
-    </p>
-    <button type="submit">Zaloguj się</button>
-</form>
+    <aside class="tf-auth-aside">
+        <a href="{{ url_for('main.index') }}" class="tf-brand">
+            <span class="tf-logo" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 18 6-9 4 6 2-3 6 6"/><path d="m7 12 2 2 2-2"/></svg>
+            </span>
+            <span>TripForge</span>
+        </a>
 
-<p>Nie masz konta? <a href="{{ url_for('auth.register') }}">Zarejestruj się</a></p>
+        <div class="tf-auth-aside-content">
+            <div class="tf-auth-eyebrow">Podróże, które łączą</div>
+            <h1 class="tf-auth-hero-title">Jeden plan.<br>Cała ekipa.</h1>
+            <p class="tf-auth-hero-text">Ustalcie termin, zagłosujcie na najlepsze miejsca i trzymajcie cały wyjazd w jednym spokojnym miejscu.</p>
+
+            <div class="tf-auth-trip">
+                <div class="tf-auth-trip-top">
+                    <div>
+                        <div class="tf-auth-trip-label">Następna podróż</div>
+                        <div class="tf-auth-trip-title">Weekend w Tatrach</div>
+                    </div>
+                    <span class="tf-auth-trip-badge">8 osób</span>
+                </div>
+
+                <div class="tf-auth-trip-route">
+                    <div class="tf-auth-trip-stop">
+                        <span class="tf-auth-trip-dot is-start" aria-hidden="true"></span>
+                        <div>
+                            <div class="tf-auth-trip-place">Kraków</div>
+                            <div class="tf-auth-trip-detail">18 czerwca · 08:00</div>
+                        </div>
+                    </div>
+                    <span class="tf-auth-trip-arrow" aria-hidden="true">→</span>
+                    <div class="tf-auth-trip-stop">
+                        <span class="tf-auth-trip-dot is-end" aria-hidden="true"></span>
+                        <div>
+                            <div class="tf-auth-trip-place">Zakopane</div>
+                            <div class="tf-auth-trip-detail">4 dni</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tf-auth-trip-progress" aria-hidden="true">
+                    <span style="width: 72%"></span>
+                </div>
+                <div class="tf-auth-trip-footer">
+                    <span>Plan gotowy w 72%</span>
+                    <span>12 zadań</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="tf-auth-main">
+        <div class="tf-auth-panel">
+            <div class="tf-auth-eyebrow">Miło cię widzieć</div>
+            <h2 class="tf-auth-title">Witaj ponownie</h2>
+            <p class="tf-auth-subtitle">Zaloguj się, aby wrócić do swoich podróży.</p>
+
+            <nav class="tf-auth-tabs">
+                <a href="{{ url_for('auth.login') }}" class="tf-auth-tab is-active" aria-current="page">Logowanie</a>
+                <a href="{{ url_for('auth.register') }}" class="tf-auth-tab">Rejestracja</a>
+            </nav>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <ul class="tf-auth-messages">
+                    {% for message in messages %}<li>{{ message }}</li>{% endfor %}
+                </ul>
+                {% endif %}
+            {% endwith %}
+
+            <form method="post" action="{{ url_for('auth.login') }}" class="tf-auth-form">
+                {{ form.csrf_token }}
+
+                <div class="tf-auth-field">
+                    {{ form.email.label(class="tf-auth-label") }}
+                    {{ form.email(class="tf-auth-input", placeholder="Twój e-mail", autocomplete="email", required=true) }}
+                </div>
+
+                <div class="tf-auth-field">
+                    {{ form.password.label(class="tf-auth-label") }}
+                    <div class="tf-auth-input-group">
+                        {{ form.password(class="tf-auth-input", placeholder="Minimum 8 znaków", autocomplete="current-password", required=true) }}
+                        <button type="button" class="tf-auth-eye" aria-label="Pokaż hasło">
+                            <svg aria-hidden="true" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="tf-auth-submit">
+                    <span>Zaloguj się</span>
+                    <span aria-hidden="true">→</span>
+                </button>
+            </form>
+
+            <p class="tf-auth-switch">Nie masz jeszcze konta? <a href="{{ url_for('auth.register') }}" class="tf-auth-link">Zarejestruj się</a></p>
+        </div>
+
+        <footer class="tf-auth-footer">
+            © 2026 TripForge · <a href="#">Prywatność</a> · <a href="#">Pomoc</a>
+        </footer>
+
+        <a href="#" class="tf-auth-help" aria-label="Pomoc">?</a>
+    </main>
+
+</div>
+
 </body>
 </html>

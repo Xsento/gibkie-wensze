@@ -24,8 +24,8 @@ def flash_errors(form):
 
 def back_to(day, trip_id=None):
     if day:
-        return redirect(url_for("main.index", wyjazd=trip_id, rok=day.year, miesiac=day.month))
-    return redirect(url_for("main.index", wyjazd=trip_id))
+        return redirect(url_for("main.calendar", wyjazd=trip_id, rok=day.year, miesiac=day.month))
+    return redirect(url_for("main.calendar", wyjazd=trip_id))
 
 
 @bp.route("/toggle", methods=["POST"])
@@ -60,4 +60,4 @@ def act_as(member_id):
         abort(404)
     session.pop("user_id", None)
     session["member_id"] = member_id
-    return redirect(url_for("main.index"))
+    return redirect(url_for("main.calendar"))

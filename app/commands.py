@@ -29,6 +29,8 @@ def init_db_command():
     db.drop_all()
     db.create_all()
     password = os.getenv("SEED_PASSWORD") or secrets.token_urlsafe(12)
+    if not os.getenv("SEED_PASSWORD"):
+        click.echo(f"Hasło kont demo (SEED_PASSWORD pozwala podać własne): {password}")
     tomasz, arkadiusz, pawel = (_seed_user(name, email, password) for name, email in DEMO_USERS)
     db.session.commit()
     create_trip("Majówka w Tatrach", date(2026, 10, 1), date(2027, 2, 28), tomasz, [arkadiusz, pawel])

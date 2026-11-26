@@ -53,7 +53,7 @@ def toggle(client, day=DAY, trip_id=TRIP_A, **extra):
 
 
 def page(client, trip_id=TRIP_A, year=2026, month=9):
-    return client.get(f"/?wyjazd={trip_id}&rok={year}&miesiac={month}").get_data(as_text=True)
+    return client.get(f"/calendar?wyjazd={trip_id}&rok={year}&miesiac={month}").get_data(as_text=True)
 
 
 def count(app, trip_id=TRIP_A, day=DAY, member_id=A_TOMASZ):
@@ -70,7 +70,7 @@ def saved_rows(app, member_id):
 # 1. Uczestnik wyjazdu może otworzyć kalendarz swojego wyjazdu
 def test_member_can_open_trip_calendar(app):
     client = login_as(app, A_TOMASZ)
-    r = client.get(f"/?wyjazd={TRIP_A}&rok=2026&miesiac=9")
+    r = client.get(f"/calendar?wyjazd={TRIP_A}&rok=2026&miesiac=9")
     html = r.get_data(as_text=True)
     assert r.status_code == 200
     assert "Majówka" in html and "Wrzesień 2026" in html and "tf-calendar-button" in html
@@ -83,7 +83,7 @@ def test_member_can_open_trip_calendar(app):
 def test_toggle_saves_availability_in_db(app):
     r = toggle(login_as(app, A_TOMASZ))
     assert r.status_code == 302
-    assert r.headers["Location"].endswith(f"/?wyjazd={TRIP_A}&rok=2026&miesiac=9")
+    assert r.headers["Location"].endswith(f"/calendar?wyjazd={TRIP_A}&rok=2026&miesiac=9")
     assert saved_rows(app, A_TOMASZ) == [(DAY, True)]
     with app.app_context():
         member = db.session.get(TripMember, A_TOMASZ)

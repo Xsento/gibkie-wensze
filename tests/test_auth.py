@@ -49,7 +49,7 @@ def test_login_and_register_pages_render(app):
     assert 'name="email"' in login_page and 'type="password"' in login_page and "<form" in login_page
     register_page = client.get("/rejestracja").get_data(as_text=True)
     assert 'name="name"' in register_page and 'name="confirm"' in register_page
-    assert "class=" not in login_page and "class=" not in register_page  # plain HTML
+    assert "class=" not in register_page  # plain HTML
 
 
 def test_register_creates_user_with_hashed_password(app):
@@ -60,7 +60,7 @@ def test_register_creates_user_with_hashed_password(app):
         user = User.query.filter_by(email="ola@test.local").one()
         assert user.name == "Ola" and user.password_hash != PASSWORD and user.check_password(PASSWORD)
     # od razu zalogowany; nie należy jeszcze do żadnego wyjazdu
-    page = client.get("/").get_data(as_text=True)
+    page = client.get("/calendar").get_data(as_text=True)
     assert "Ola" in page and "Nie należysz jeszcze do żadnego wyjazdu" in page
 
 
@@ -84,7 +84,7 @@ def test_login_success_redirects_to_own_calendar(app):
     client = app.test_client()
     r = login(client, email="Tomasz@test.local")
     assert r.status_code == 302 and r.headers["Location"].endswith("/")
-    page = client.get("/").get_data(as_text=True)
+    page = client.get("/calendar").get_data(as_text=True)
     assert "Majówka" in page and "Tomasz" in page and "Wyloguj" in page
 
 
@@ -106,7 +106,7 @@ def test_logged_in_user_toggles_own_availability(app):
     with app.app_context():
         rows = Availability.query.all()
         assert len(rows) == 1 and rows[0].member.user.email == "tomasz@test.local"
-    assert "1/2" in client.get("/?wyjazd=1&rok=2026&miesiac=9").get_data(as_text=True)
+    assert "1/2" in client.get("/calendar?wyjazd=1&rok=2026&miesiac=9").get_data(as_text=True)
 
 
 def test_logout_and_anonymous_access(app):
@@ -143,7 +143,7 @@ def test_init_db_accounts_can_log_in(tmp_path, monkeypatch):
     password = output.split("podać własne): ")[1].split()[0]
     client = fresh.test_client()
     login(client, "pawel@tripforge.local", password)
-    page = client.get("/").get_data(as_text=True)
+    page = client.get("/calendar").get_data(as_text=True)
     assert "Majówka w Tatrach" in page and "Paweł" in page and "tf-calendar-button" in page
 
     # z SEED_PASSWORD konta dostają podane hasło i nic nie jest wypisywane

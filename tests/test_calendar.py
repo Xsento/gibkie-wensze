@@ -133,13 +133,13 @@ def test_errors(app):
 
 def test_routes(app):
     client = app.test_client()
-    r = client.get("/")
+    r = client.get("/calendar")
     assert r.status_code == 200 and "Wybierz uczestnika" in r.get_data(as_text=True)
     client.get("/jako/2")
-    page = client.get("/?rok=2026&miesiac=10").get_data(as_text=True)
+    page = client.get("/calendar?rok=2026&miesiac=10").get_data(as_text=True)
     assert "Październik 2026" in page
     r = client.post("/toggle", data={"day": "2026-10-05"})
-    assert r.headers["Location"].endswith("/?rok=2026&miesiac=10")
+    assert r.headers["Location"].endswith("/calendar?rok=2026&miesiac=10")
     with app.app_context():
         assert day_of(calendar_service.get_calendar(TOMASZ, 2026, 10), date(2026, 10, 5)).available_count == 1
 
@@ -151,7 +151,7 @@ def test_routes(app):
         assert view.approved_label == "5–8 października"
         assert day_of(view, date(2026, 10, 5)).available_count == 2
 
-    page = client.get("/?rok=2026&miesiac=10").get_data(as_text=True)
+    page = client.get("/calendar?rok=2026&miesiac=10").get_data(as_text=True)
     assert "tf-calendar-button" not in page and "Zatwierdź termin" not in page
     assert "Zatwierdzono 5–8 października" in page
     r = client.post("/toggle", data={"day": "2026-10-06"}, follow_redirects=True)
