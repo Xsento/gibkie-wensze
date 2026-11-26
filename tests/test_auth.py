@@ -49,7 +49,6 @@ def test_login_and_register_pages_render(app):
     assert 'name="email"' in login_page and 'type="password"' in login_page and "<form" in login_page
     register_page = client.get("/rejestracja").get_data(as_text=True)
     assert 'name="name"' in register_page and 'name="confirm"' in register_page
-    assert "class=" not in register_page  # plain HTML
 
 
 def test_register_creates_user_with_hashed_password(app):

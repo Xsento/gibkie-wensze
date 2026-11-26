@@ -146,8 +146,7 @@
                         action="{{ url_for('auth.login') }}"
                         class="tf-auth-form"
                     >
-                        {# Jeśli używasz Flask-WTF, odkomentuj: #} {# {{
-                        form.hidden_tag() }} #}
+                        {{ form.csrf_token }}
 
                         <div class="mb-3">
                             <label for="email" class="tf-auth-label">
