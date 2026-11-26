@@ -1,28 +1,52 @@
+/* =========================================================
+   1. DESIGN TOKENS (JEDYNE ŹRÓDŁO KOLORÓW, CZCIONEK I PROMIENI)
+   ========================================================= */
 :root {
+    /* Kolory bazowe */
     --tf-navy: #15213e;
+    --tf-navy-mid: #1a2a4e;
     --tf-navy-light: #34415e;
     --tf-orange: #e7470b;
     --tf-orange-hover: #c83b08;
-    --tf-bg: #f4f5f7;
-    --tf-text: #192744;
-    --tf-muted: #788398;
-    --tf-border: #e6eaf0;
-    --tf-green: #29964a;
     --tf-contrast: #0b4bc6;
-    --tf-radius: 19px;
+    --tf-green: #29964a;
+
+    /* Tła i powierzchnie */
+    --tf-bg: #f4f5f7;
+    --tf-surface: #ffffff;
+    --tf-surface-subtle: #eef0f4;
+
+    /* Teksty */
+    --tf-text: #192744;
+    --tf-text-secondary: #5c6880;
+    --tf-muted: #788398;
+
+    /* Obramowania i cienie */
+    --tf-border: #e6eaf0;
+    --tf-shadow-sm: 0 2px 6px rgba(21, 33, 62, 0.04);
+    --tf-shadow-md: 0 12px 28px rgba(21, 33, 62, 0.09);
+
+    /* Zaokrąglenia */
+    --tf-radius-card: 18px;
+    --tf-radius-control: 11px;
+    --tf-radius-pill: 999px;
+
+    /* Typografia */
+    --tf-font-sans:
+        Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
+/* =========================================================
+   2. BAZA I TYPOGRAFIA (SPÓJNA DLA CAŁEJ APLIKACJI)
+   ========================================================= */
 body.tf-body {
     margin: 0;
     background: var(--tf-bg);
     color: var(--tf-text);
-    font-family:
-        Inter,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
+    font-family: var(--tf-font-sans);
     font-size: 13px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
 }
 
 .tf-body h1,
@@ -30,22 +54,23 @@ body.tf-body {
 .tf-body h3,
 .tf-body h4 {
     color: var(--tf-text);
-    font-weight: 750;
-    letter-spacing: -0.3px;
+    font-family: var(--tf-font-sans);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0;
 }
 
 .tf-body h2 {
-    font-size: 19px;
-    margin: 0;
+    font-size: 20px;
 }
 
 .tf-body h3 {
-    font-size: 13px;
-    margin: 0;
+    font-size: 15px;
 }
 
 .tf-body a {
     text-decoration: none;
+    transition: color 0.15s ease;
 }
 
 .tf-container {
@@ -53,34 +78,125 @@ body.tf-body {
 }
 
 .tf-page {
-    padding-top: 24px;
-    padding-bottom: 40px;
+    padding-top: 28px;
+    padding-bottom: 48px;
+}
+
+.tf-page .alert {
+    border-radius: var(--tf-radius-control);
+    font-size: 13px;
+}
+
+/* Wspólny nadtytuł (eyebrow) dla wszystkich sekcji */
+.tf-eyebrow,
+.tf-hero-eyebrow,
+.tf-section-eyebrow,
+.tf-auth-eyebrow,
+.tf-auth-eyebrow-dark {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--tf-orange);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
 
 /* =========================================================
-   HEADER & NAVBAR
+   3. WSPÓLNE KOMPONENTY (PRZYCISKI, KARTY, BADGE, INPUTY)
    ========================================================= */
+.tf-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border: 1px solid var(--tf-orange);
+    border-radius: var(--tf-radius-control);
+    background: var(--tf-orange);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.1s ease;
+}
 
+.tf-btn-primary:hover {
+    border-color: var(--tf-orange-hover);
+    background: var(--tf-orange-hover);
+    color: #ffffff;
+}
+
+.tf-card {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--tf-border);
+    border-radius: var(--tf-radius-card);
+    background: var(--tf-surface);
+    box-shadow: var(--tf-shadow-sm);
+}
+
+.tf-card-body {
+    padding: 22px 24px;
+}
+
+.tf-card-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.tf-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 11px;
+    border-radius: var(--tf-radius-pill);
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.tf-badge-success {
+    background: color-mix(in srgb, var(--tf-green) 14%, var(--tf-surface));
+    color: var(--tf-green);
+}
+
+.tf-badge-pending {
+    background: color-mix(in srgb, var(--tf-orange) 14%, var(--tf-surface));
+    color: var(--tf-orange-hover);
+}
+
+/* =========================================================
+   4. HEADER & NAVBAR (WSPÓLNY DLA CAŁEJ APLIKACJI)
+   ========================================================= */
 .tf-header {
     background: var(--tf-navy);
-    color: white;
+    color: #ffffff;
 }
 
 .tf-topbar {
-    min-height: 60px;
+    min-height: 62px;
 }
 
 .tf-brand {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    color: white;
-    font-size: 20px;
+    color: #ffffff;
+    font-size: 19px;
     font-weight: 800;
+    letter-spacing: -0.02em;
 }
 
 .tf-brand:hover {
-    color: white;
+    color: #ffffff;
 }
 
 .tf-logo {
@@ -92,11 +208,23 @@ body.tf-body {
     border-radius: 9px;
     background: var(--tf-orange);
     color: #ffffff;
+    flex-shrink: 0;
+}
+
+.tf-header a:not(.tf-brand):not(.tf-btn-primary):not(.dropdown-item) {
+    color: #c6cede;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.tf-header a:not(.tf-brand):not(.tf-btn-primary):not(.dropdown-item):hover {
+    color: #ffffff;
 }
 
 .tf-user-name {
     color: #d9dfeb;
-    font-size: 12px;
+    font-size: 13px;
+    font-weight: 600;
 }
 
 .tf-user-chip {
@@ -105,10 +233,10 @@ body.tf-body {
     gap: 8px;
     padding: 6px 14px;
     border: 1px solid rgba(255, 255, 255, 0.16);
-    border-radius: 10px;
+    border-radius: var(--tf-radius-control);
     background: rgba(255, 255, 255, 0.06);
     color: #ffffff;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition:
@@ -128,55 +256,23 @@ body.tf-body {
     color: #c6cede;
 }
 
-.tf-btn-primary {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px 14px;
-    border: 1px solid var(--tf-orange);
-    border-radius: 10px;
-    background: var(--tf-orange);
-    color: white;
-    font-size: 12px;
-    font-weight: 750;
-    white-space: nowrap;
-}
-
-.tf-btn-primary:hover {
-    border-color: var(--tf-orange-hover);
-    background: var(--tf-orange-hover);
-    color: white;
-}
-
 /* =========================================================
-   DASHBOARD (index.html)
+   5. DASHBOARD (index.html)
    ========================================================= */
-
 .tf-hero {
     position: relative;
     overflow: hidden;
-    padding: 48px 54px;
-    margin-bottom: 40px;
-    border-radius: 22px;
-    background: linear-gradient(115deg, #13203c 0%, #172748 55%, #1d3563 100%);
-    color: #ffffff;
-    box-shadow: 0 14px 32px rgba(19, 32, 60, 0.12);
-}
-
-.tf-hero::after {
-    content: "";
-    position: absolute;
-    top: -30%;
-    right: -5%;
-    width: 420px;
-    height: 420px;
-    border-radius: 50%;
-    background: radial-gradient(
-        circle,
-        rgba(45, 85, 160, 0.25) 0%,
-        transparent 70%
+    padding: 46px 52px;
+    margin-bottom: 38px;
+    border-radius: var(--tf-radius-card);
+    background: linear-gradient(
+        115deg,
+        var(--tf-navy) 0%,
+        var(--tf-navy-mid) 65%,
+        #213663 100%
     );
-    pointer-events: none;
+    color: #ffffff;
+    box-shadow: var(--tf-shadow-md);
 }
 
 .tf-hero-content {
@@ -185,36 +281,23 @@ body.tf-body {
     max-width: 520px;
 }
 
-.tf-hero-eyebrow {
-    margin-bottom: 14px;
-    color: var(--tf-orange);
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-}
-
 .tf-hero-title {
     color: #ffffff !important;
-    font-size: clamp(28px, 3.6vw, 42px);
-    font-weight: 800 !important;
-    line-height: 1.13;
-    letter-spacing: -0.9px !important;
-    margin: 0 0 16px 0;
+    font-size: clamp(28px, 3.5vw, 40px);
+    line-height: 1.14;
+    margin-bottom: 14px;
 }
 
 .tf-hero-text {
-    color: #b4bfd4;
+    color: #b8c2d6;
     font-size: 14px;
     line-height: 1.6;
-    margin: 0 0 28px 0;
+    margin: 0 0 26px 0;
 }
 
 .tf-hero-button {
-    gap: 8px;
     padding: 12px 22px;
-    font-size: 13px;
-    box-shadow: 0 6px 18px rgba(231, 71, 11, 0.32);
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--tf-orange) 32%, transparent);
 }
 
 .tf-section-heading {
@@ -224,19 +307,8 @@ body.tf-body {
     margin-bottom: 18px;
 }
 
-.tf-section-eyebrow {
-    margin-bottom: 4px;
-    color: var(--tf-orange);
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 1.1px;
-    text-transform: uppercase;
-}
-
 .tf-section-title {
     font-size: 22px !important;
-    font-weight: 800 !important;
-    letter-spacing: -0.5px !important;
 }
 
 .tf-section-count {
@@ -245,9 +317,8 @@ body.tf-body {
     font-weight: 600;
 }
 
+/* Karta wyjazdu na liście */
 .tf-trip-card {
-    position: relative;
-    overflow: hidden !important;
     height: 100%;
     transition:
         transform 0.16s ease,
@@ -265,19 +336,18 @@ body.tf-body {
 }
 
 .tf-trip-card.is-blue::before {
-    background: #0b57d0;
+    background: var(--tf-contrast);
 }
 
 .tf-trip-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 26px rgba(20, 33, 63, 0.08);
+    box-shadow: var(--tf-shadow-md);
 }
 
 .tf-trip-card .tf-card-body {
     display: flex;
     flex-direction: column;
     height: 100%;
-    padding: 24px 26px 18px;
 }
 
 .tf-trip-card-top {
@@ -293,18 +363,15 @@ body.tf-body {
     align-items: center;
     padding: 4px 11px;
     margin-bottom: 10px;
-    border-radius: 20px;
-    background: #f0f3f8;
-    color: #5b6782;
+    border-radius: var(--tf-radius-pill);
+    background: var(--tf-surface-subtle);
+    color: var(--tf-text-secondary);
     font-size: 11px;
     font-weight: 700;
 }
 
 .tf-trip-card-title {
     font-size: 19px !important;
-    font-weight: 800 !important;
-    color: var(--tf-text);
-    margin: 0;
 }
 
 .tf-trip-card-icon {
@@ -315,43 +382,42 @@ body.tf-body {
     width: 34px;
     height: 34px;
     border-radius: 10px;
-    background: #eef3fc;
-    color: #1d5bd6;
+    background: color-mix(in srgb, var(--tf-contrast) 10%, var(--tf-surface));
+    color: var(--tf-contrast);
 }
 
 .tf-trip-meta {
     list-style: none;
     padding: 0;
-    margin: 0 0 22px 0;
+    margin: 0 0 20px 0;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 9px;
 }
 
 .tf-trip-meta li {
     display: flex;
     align-items: center;
     gap: 10px;
-    color: #5c6880;
-    font-size: 12.5px;
+    color: var(--tf-text-secondary);
+    font-size: 13px;
 }
 
 .tf-trip-meta svg {
     flex-shrink: 0;
-    color: #8b96ac;
+    color: var(--tf-muted);
 }
 
 .tf-trip-card-link {
     margin-top: auto;
     padding-top: 14px;
-    border-top: 1px solid #f1f4f8;
+    border-top: 1px solid var(--tf-border);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    color: #6b768c;
+    color: var(--tf-text-secondary);
     font-size: 12px;
-    font-weight: 600;
-    transition: color 0.15s ease;
+    font-weight: 700;
 }
 
 .tf-trip-card-link:hover {
@@ -359,13 +425,12 @@ body.tf-body {
 }
 
 .tf-trip-card.is-blue .tf-trip-card-link:hover {
-    color: #0b57d0;
+    color: var(--tf-contrast);
 }
 
 /* =========================================================
-   WIDOK WYJAZDU & KALENDARZ
+   6. WIDOK WYJAZDU I KALENDARZ (calendar.html)
    ========================================================= */
-
 .tf-trip-heading {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -373,61 +438,16 @@ body.tf-body {
     gap: 20px;
 }
 
-.tf-eyebrow {
-    margin-bottom: 3px;
+.tf-trip-heading .tf-eyebrow {
     color: var(--tf-muted);
+    text-transform: none;
+    letter-spacing: 0;
     font-size: 13px;
+    font-weight: 600;
 }
 
 .tf-page-title {
-    margin: 0;
     font-size: clamp(26px, 3vw, 34px);
-    letter-spacing: -0.8px;
-}
-
-.tf-card {
-    overflow: visible;
-    border: 1px solid #edf0f4;
-    border-radius: var(--tf-radius);
-    background: white;
-    box-shadow: 0 2px 3px rgb(20 33 63 / 3%);
-}
-
-.tf-card-body {
-    padding: 20px;
-}
-
-.tf-card-heading {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 16px;
-}
-
-.tf-card-heading h2 {
-    font-size: 19px;
-}
-
-.tf-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 5px 10px;
-    border-radius: 30px;
-    font-size: 11px;
-    font-weight: 750;
-    white-space: nowrap;
-}
-
-.tf-badge-success {
-    background: #e5f4e9;
-    color: #327a48;
-}
-
-.tf-badge-pending {
-    background: #fff0df;
-    color: #b95b1d;
 }
 
 .tf-trip-switch {
@@ -437,12 +457,16 @@ body.tf-body {
     margin-top: 8px;
 }
 
-.tf-trip-switch a {
-    text-decoration: none;
-}
-
 .tf-month-change {
     cursor: pointer;
+}
+
+.tf-month-change a {
+    color: var(--tf-text);
+}
+
+.tf-month-change a:hover {
+    color: var(--tf-orange);
 }
 
 .tf-calendar-weekdays {
@@ -451,7 +475,8 @@ body.tf-body {
     gap: 4px;
     margin-bottom: 8px;
     color: var(--tf-muted);
-    font-size: 10px;
+    font-size: 11px;
+    font-weight: 600;
     text-align: center;
 }
 
@@ -467,10 +492,10 @@ body.tf-body {
     display: grid;
     place-items: center;
     min-width: 0;
-    height: 34px;
+    height: 36px;
     border-radius: 9px;
-    background: #eef0f4;
-    color: #758096;
+    background: var(--tf-surface-subtle);
+    color: var(--tf-text-secondary);
     font-size: 12px;
 }
 
@@ -478,7 +503,6 @@ body.tf-body {
     cursor: pointer;
 }
 
-/* im więcej osób wybrało dzień (--share od 0 do 1), tym mocniejszy pomarańczowy */
 .tf-calendar-day.is-partial {
     background: color-mix(
         in srgb,
@@ -494,13 +518,13 @@ body.tf-body {
 
 .tf-calendar-day.is-most,
 .tf-calendar-day.is-all .tf-calendar-button {
-    color: white;
+    color: #ffffff;
 }
 
 .tf-calendar-day.is-all {
     background: var(--tf-orange);
-    color: white;
-    font-weight: 750;
+    color: #ffffff;
+    font-weight: 700;
 }
 
 .tf-calendar-form,
@@ -510,11 +534,12 @@ body.tf-body {
 }
 
 .tf-calendar-button {
+    border: none;
     border-radius: 9px;
     background: none;
-    color: #758096;
+    color: var(--tf-text-secondary);
+    font-family: var(--tf-font-sans);
     font-size: 12px;
-    border: none;
 }
 
 .tf-calendar-button,
@@ -525,13 +550,13 @@ body.tf-body {
 }
 
 .tf-calendar-button.is-selected {
-    border: var(--tf-navy) 2px solid;
-    font-weight: bold;
+    border: 2px solid var(--tf-navy);
+    font-weight: 700;
     color: var(--tf-navy);
 }
 
 .tf-calendar-day .day-number.is-selected {
-    font-weight: bold;
+    font-weight: 700;
 }
 
 .tf-calendar-day.is-mine:not(:has(.tf-calendar-form)) {
@@ -542,7 +567,7 @@ body.tf-body {
     display: block;
     margin-top: 2px;
     font-size: 9px;
-    font-weight: 650;
+    font-weight: 700;
     opacity: 0.85;
 }
 
@@ -551,7 +576,7 @@ body.tf-body {
     flex-wrap: wrap;
     align-items: center;
     gap: 12px;
-    margin-top: 14px;
+    margin-top: 16px;
     color: var(--tf-muted);
     font-size: 11px;
 }
@@ -572,7 +597,7 @@ body.tf-body {
     width: 14px;
     height: 14px;
     border-radius: 4px;
-    background: #eef0f4;
+    background: var(--tf-surface-subtle);
 }
 
 .tf-legend-swatch.is-mine {
@@ -587,73 +612,78 @@ body.tf-body {
     background: var(--tf-orange);
 }
 
-/* ZATWIERDZANIE TERMINU */
-
+/* Zatwierdzanie terminu */
 .tf-calendar-approve {
     margin-top: 24px;
-    font-family: inherit;
+    padding-top: 18px;
+    border-top: 1px solid var(--tf-border);
+}
+
+.tf-calendar-approve h2 {
+    font-size: 16px;
+    margin-bottom: 10px;
 }
 
 .tf-calendar-approve-form {
-    margin-top: 10px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
     width: 100%;
 }
 
 .tf-inputs-group {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .tf-calendar-approve-form input[type="date"],
 .tf-calendar-approve-form input[type="text"] {
-    padding: 10px 14px;
-    border: 1px solid #cbd5e1;
-    border-radius: 12px;
-    background-color: #ffffff;
-    color: #334155;
-    font-size: 14px;
+    padding: 9px 12px;
+    border: 1px solid var(--tf-border);
+    border-radius: var(--tf-radius-control);
+    background: var(--tf-surface);
+    color: var(--tf-text);
+    font-family: var(--tf-font-sans);
+    font-size: 13px;
     outline: none;
-    transition: all 0.2s ease;
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
 }
 
 .tf-calendar-approve-form input:focus {
     border-color: var(--tf-contrast);
-    box-shadow: 0 0 0 3px rgba(11, 75, 198, 0.15);
+    box-shadow: 0 0 0 3px
+        color-mix(in srgb, var(--tf-contrast) 14%, transparent);
 }
 
 .tf-calendar-approve-button {
-    padding: 10px 20px;
-    background-color: var(--tf-contrast);
-    color: #ffffff;
+    padding: 10px 18px;
     border: none;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 600;
+    border-radius: var(--tf-radius-control);
+    background: var(--tf-contrast);
+    color: #ffffff;
+    font-family: var(--tf-font-sans);
+    font-size: 13px;
+    font-weight: 700;
     cursor: pointer;
-    transition:
-        background-color 0.2s ease,
-        transform 0.1s ease;
     margin-left: auto;
+    transition: opacity 0.15s ease;
 }
 
-/* BOOTSTRAP ALERTS */
-
-.tf-page .alert {
-    border-radius: 12px;
-    font-size: 13px;
+.tf-calendar-approve-button:hover {
+    opacity: 0.92;
 }
 
 /* =========================================================
-   LOGOWANIE & REJESTRACJA (login.html, register.html)
+   7. LOGOWANIE I REJESTRACJA (login.html, register.html)
    ========================================================= */
-
 body.tf-login-page {
     min-height: 100vh;
-    background: #f8f9fb;
+    background: var(--tf-bg);
 }
 
 .tf-auth-layout {
@@ -665,10 +695,10 @@ body.tf-login-page {
 .tf-auth-left {
     position: relative;
     overflow: hidden;
-    background: radial-gradient(
-        circle at 85% 25%,
-        #1d315c 0%,
-        var(--tf-navy) 65%
+    background: linear-gradient(
+        155deg,
+        var(--tf-navy) 0%,
+        var(--tf-navy-mid) 100%
     );
     color: #ffffff;
     padding: 40px 48px;
@@ -716,23 +746,11 @@ body.tf-login-page {
     align-items: center;
     gap: 10px;
     color: #ffffff;
-    font-size: 18px;
+    font-size: 19px;
     font-weight: 800;
-    letter-spacing: -0.3px;
 }
 
 .tf-auth-brand:hover {
-    color: #ffffff;
-}
-
-.tf-auth-brand-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
-    background: var(--tf-orange);
     color: #ffffff;
 }
 
@@ -741,22 +759,10 @@ body.tf-login-page {
     padding: 32px 0;
 }
 
-.tf-auth-eyebrow {
-    display: inline-block;
-    margin-bottom: 14px;
-    color: var(--tf-orange);
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-}
-
 .tf-auth-hero h1 {
     color: #ffffff !important;
-    font-size: clamp(32px, 3.2vw, 44px);
-    font-weight: 800;
-    line-height: 1.12;
-    letter-spacing: -1px;
+    font-size: clamp(32px, 3.2vw, 42px);
+    line-height: 1.13;
     margin: 0 0 18px 0;
 }
 
@@ -764,13 +770,14 @@ body.tf-login-page {
     color: #b8c2d6;
     font-size: 14px;
     line-height: 1.6;
-    margin: 0 0 34px 0;
+    margin: 0 0 32px 0;
 }
 
+/* Karta podglądu podróży */
 .tf-preview-card {
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
+    border-radius: var(--tf-radius-card);
     padding: 18px 20px;
     backdrop-filter: blur(8px);
 }
@@ -797,8 +804,8 @@ body.tf-login-page {
 
 .tf-preview-pill {
     padding: 4px 10px;
-    border-radius: 20px;
-    background: rgba(231, 71, 11, 0.22);
+    border-radius: var(--tf-radius-pill);
+    background: color-mix(in srgb, var(--tf-orange) 24%, transparent);
     color: #ff9a73;
     font-size: 11px;
     font-weight: 700;
@@ -828,12 +835,12 @@ body.tf-login-page {
 
 .tf-dot-orange {
     background: var(--tf-orange);
-    box-shadow: 0 0 0 3px rgba(231, 71, 11, 0.25);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--tf-orange) 28%, transparent);
 }
 
 .tf-dot-green {
     background: var(--tf-green);
-    box-shadow: 0 0 0 3px rgba(41, 150, 74, 0.25);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--tf-green) 28%, transparent);
 }
 
 .tf-preview-point strong {
@@ -867,24 +874,25 @@ body.tf-login-page {
 
 .tf-preview-progress-bar {
     height: 5px;
-    border-radius: 99px;
+    border-radius: var(--tf-radius-pill);
     background: rgba(255, 255, 255, 0.12);
     overflow: hidden;
 }
 
 .tf-preview-progress-fill {
     height: 100%;
-    border-radius: 99px;
-    background: linear-gradient(90deg, var(--tf-orange), #f59e0b);
+    border-radius: var(--tf-radius-pill);
+    background: var(--tf-orange);
 }
 
+/* Prawy panel autoryzacji */
 .tf-auth-right {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
     padding: 40px 24px 24px;
-    background: #f8f9fb;
+    background: var(--tf-bg);
 }
 
 .tf-auth-form-wrapper {
@@ -897,21 +905,8 @@ body.tf-login-page {
     margin-bottom: 24px;
 }
 
-.tf-auth-eyebrow-dark {
-    display: inline-block;
-    margin-bottom: 6px;
-    color: var(--tf-orange);
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 1.1px;
-    text-transform: uppercase;
-}
-
 .tf-auth-heading h2 {
-    font-size: 30px !important;
-    font-weight: 800 !important;
-    letter-spacing: -0.7px;
-    color: var(--tf-text);
+    font-size: 28px !important;
     margin: 0 0 6px 0;
 }
 
@@ -926,18 +921,18 @@ body.tf-login-page {
     grid-template-columns: 1fr 1fr;
     padding: 4px;
     margin-bottom: 24px;
-    border-radius: 12px;
-    background: #eceff4;
+    border: 1px solid var(--tf-border);
+    border-radius: var(--tf-radius-control);
+    background: var(--tf-surface-subtle);
 }
 
 .tf-auth-tab {
     padding: 9px 12px;
-    border-radius: 9px;
+    border-radius: 8px;
     text-align: center;
     font-size: 13px;
     font-weight: 700;
     color: var(--tf-muted);
-    transition: all 0.15s ease;
 }
 
 .tf-auth-tab:hover {
@@ -945,13 +940,13 @@ body.tf-login-page {
 }
 
 .tf-auth-tab.active {
-    background: #ffffff;
+    background: var(--tf-surface);
     color: var(--tf-text);
-    box-shadow: 0 2px 6px rgba(21, 33, 62, 0.06);
+    box-shadow: var(--tf-shadow-sm);
 }
 
 .tf-login-alert {
-    border-radius: 12px;
+    border-radius: var(--tf-radius-control);
     font-size: 13px;
     margin-bottom: 18px;
 }
@@ -968,9 +963,10 @@ body.tf-login-page {
     height: 44px;
     padding: 10px 14px;
     border: 1px solid var(--tf-border);
-    border-radius: 11px;
-    background: #ffffff;
+    border-radius: var(--tf-radius-control);
+    background: var(--tf-surface);
     color: var(--tf-text);
+    font-family: var(--tf-font-sans);
     font-size: 13px;
     transition:
         border-color 0.15s ease,
@@ -978,12 +974,12 @@ body.tf-login-page {
 }
 
 .tf-auth-input::placeholder {
-    color: #9aa4b8;
+    color: var(--tf-muted);
 }
 
 .tf-auth-input:focus {
     border-color: var(--tf-orange);
-    box-shadow: 0 0 0 3px rgba(231, 71, 11, 0.12);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--tf-orange) 14%, transparent);
 }
 
 .tf-password-wrapper {
@@ -1030,26 +1026,6 @@ body.tf-login-page {
     height: 14px;
 }
 
-.tf-remember-me a {
-    color: var(--tf-orange);
-    font-weight: 600;
-}
-
-.tf-remember-me a:hover {
-    color: var(--tf-orange-hover);
-    text-decoration: underline;
-}
-
-.tf-forgot-link {
-    color: var(--tf-orange);
-    font-weight: 600;
-}
-
-.tf-forgot-link:hover {
-    color: var(--tf-orange-hover);
-    text-decoration: underline;
-}
-
 .tf-auth-submit {
     display: inline-flex;
     align-items: center;
@@ -1057,15 +1033,14 @@ body.tf-login-page {
     gap: 8px;
     height: 46px;
     border: none;
-    border-radius: 11px;
+    border-radius: var(--tf-radius-control);
     background: var(--tf-orange);
     color: #ffffff;
+    font-family: var(--tf-font-sans);
     font-size: 14px;
     font-weight: 700;
-    box-shadow: 0 6px 16px rgba(231, 71, 11, 0.25);
-    transition:
-        background-color 0.15s ease,
-        transform 0.1s ease;
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--tf-orange) 26%, transparent);
+    transition: background-color 0.15s ease;
 }
 
 .tf-auth-submit:hover {
@@ -1092,15 +1067,14 @@ body.tf-login-page {
 
 .tf-auth-footer {
     margin-top: 24px;
-    color: #9aa4b8;
+    color: var(--tf-muted);
     font-size: 11px;
     text-align: center;
 }
 
 /* =========================================================
-   RESPONSIVE
+   8. RESPONSYWNOŚĆ
    ========================================================= */
-
 @media (max-width: 991.98px) {
     .tf-trip-heading {
         grid-template-columns: 1fr;
@@ -1132,11 +1106,11 @@ body.tf-login-page {
 
     .tf-page {
         padding-top: 16px;
-        padding-bottom: 25px;
+        padding-bottom: 28px;
     }
 
     .tf-brand {
-        gap: 7px;
+        gap: 8px;
         font-size: 17px;
     }
 
@@ -1144,37 +1118,17 @@ body.tf-login-page {
         min-height: 56px;
     }
 
-    .tf-page-title {
-        font-size: 27px;
-    }
-
     .tf-card-body {
-        padding: 14px;
-    }
-
-    .tf-card-heading h2 {
-        font-size: 17px;
-    }
-
-    .tf-legend {
-        gap: 8px;
+        padding: 16px;
     }
 
     .tf-hero {
-        padding: 30px 22px;
+        padding: 28px 22px;
         margin-bottom: 28px;
-    }
-
-    .tf-trip-card .tf-card-body {
-        padding: 18px 18px 16px;
     }
 
     .tf-auth-left {
         padding: 24px 18px;
-    }
-
-    .tf-auth-hero h1 {
-        font-size: 28px;
     }
 
     .tf-preview-route {
@@ -1184,9 +1138,5 @@ body.tf-login-page {
 
     .tf-auth-right {
         padding: 28px 18px 20px;
-    }
-
-    .tf-auth-heading h2 {
-        font-size: 25px !important;
     }
 }
